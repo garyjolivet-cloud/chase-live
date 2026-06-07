@@ -145,10 +145,37 @@ function parseStation(text, kind) {
   let latest = null;
   if (last) {
     const v = last.values;
+    // KH publishes wind columns as: DIRECTION (degrees), SPEED (kph), GUST (kph)
+    // Clamp wind values to realistic ranges so format changes don't show 300 kph
+    const clampWind = (n) => (typeof n === 'number' && n >= 0 && n <= 200) ? n : null;
+    const clampDir = (n) => (typeof n === 'number' && n >= 0 && n <= 360) ? n : null;
+    const clampTemp = (n) => (typeof n === 'number' && n >= -50 && n <= 40) ? n : null;
+    const clampHS = (n) => (typeof n === 'number' && n >= 0 && n <= 500) ? n : null;
+
     if (kind === 'whitewall') {
-      latest = { time: last.timeLabel, airTemp: v[0], wind: v[1], dir: v[2], gust: v[3] };
+      // Columns: airTemp, dir, wind, gust
+      latest = {
+        time: last.timeLabel,
+        airTemp: clampTemp(v[0]),
+        dir:  clampDir(v[1]),
+        wind: clampWind(v[2]),
+        gust: clampWind(v[3]),
+      };
     } else {
-      latest = { time: last.timeLabel, airTemp: v[0], rh: v[1], hn24: v[2], hst: v[3], hs: v[4], hrPrecip: v[5], cumPrecip: v[6], wind: v[7], dir: v[8], gust: v[9] };
+      // Columns: airTemp, rh, hn24, hst, hs, hrPrecip, cumPrecip, dir, wind, gust
+      latest = {
+        time: last.timeLabel,
+        airTemp: clampTemp(v[0]),
+        rh: v[1],
+        hn24: v[2],
+        hst: v[3],
+        hs: clampHS(v[4]),
+        hrPrecip: v[5],
+        cumPrecip: v[6],
+        dir:  clampDir(v[7]),
+        wind: clampWind(v[8]),
+        gust: clampWind(v[9]),
+      };
     }
   }
   return { latest, rows };
@@ -192,4 +219,3 @@ function buildFromTableRow(headerRow, dataRow, kind) {
     wind: get(/wind.*sp|^wind$/), dir: get(/dir/), gust: get(/gust/),
   };
 }
-

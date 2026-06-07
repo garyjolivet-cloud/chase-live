@@ -1,4 +1,4 @@
-// Returns a pre-computed elevation grid for the Kicking Horse area.
+//  Returns a pre-computed elevation grid for the Kicking Horse area.
 // Fetched once from OpenTopoData (free SRTM), then cached in Cloudflare KV-like memory.
 //
 // Grid: 31×31 cells (961 points) covering roughly 5.5km × 5.5km centered on KH.

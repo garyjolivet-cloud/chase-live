@@ -1,230 +1,104 @@
-// functions/api/pois.smoke.js
-// Manual smoke test — not part of npm test suite.
-// Run with: node functions/api/pois.smoke.js
+// functions/api/pois.js
+// Cloudflare Pages Function — POI catalog endpoint.
 //
-// Simulates the KV binding and exercises every code path in pois.js
-// before we deploy. Cloudflare Pages Functions can't be run locally
-// without wrangler, but the handler is plain JS that we can call
-// directly with a fake env.
+// Per SPEC v0.7 § 3.6.
+//
+// Step 4 scope: GET only.
+//   GET /api/pois        → full catalog
+//   GET /api/pois?id=... → single POI by id
+//
+// Step 5 will add POST/DELETE with admin token auth + CORS for back office.
+//
+// Storage model:
+//   The full catalog lives under a single KV key named "catalog".
+//   The value is a JSON array of POI records (see SPEC § 3.5).
+//   Returning the entire catalog in one read is fine for our scale
+//   (~100 POIs × ~2KB = ~200KB, well under KV's 25MB value limit).
+//
+// Bindings (configured in Cloudflare Pages → Settings → Bindings):
+//   CHUTES_KV   → KV namespace "chase-life-chutes"
+//
+// (MEDIA_BUCKET binding exists but is unused here; used by /api/pois/upload in Step 6.)
 
-import { onRequestGet, onRequest } from './pois.js';
+const CATALOG_KEY = 'catalog';
+const SCHEMA_VERSION = '0.7';
 
-// ─── Fake KV namespace ──────────────────────────────────────
+// ─── Helpers ────────────────────────────────────────────────
 
-function makeKV(initial) {
-  const store = new Map(Object.entries(initial || {}));
-  return {
-    async get(key) {
-      return store.get(key) ?? null;
+function jsonResponse(obj, status = 200) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: {
+      'content-type': 'application/json; charset=utf-8',
+      'cache-control': 'no-store',
     },
-    async put(key, value) {
-      store.set(key, value);
-    },
-    async delete(key) {
-      store.delete(key);
-    },
-  };
+  });
 }
 
-// ─── Test cases ─────────────────────────────────────────────
+function errorResponse(message, status = 500) {
+  return jsonResponse({ error: message }, status);
+}
 
-let passed = 0;
-let failed = 0;
-const failures = [];
-
-async function check(name, fn) {
+// Read the catalog array from KV.
+// Returns [] if the key doesn't exist or contains invalid JSON.
+async function readCatalog(kv) {
+  const raw = await kv.get(CATALOG_KEY);
+  if (!raw) return [];
   try {
-    await fn();
-    console.log(`  ✓ ${name}`);
-    passed++;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
   } catch (err) {
-    console.log(`  ✗ ${name}`);
-    console.log(`      ${err.message}`);
-    failed++;
-    failures.push(name);
+    console.error('Catalog JSON parse failed:', err);
+    return [];
   }
 }
 
-function assertEq(actual, expected, msg) {
-  const a = JSON.stringify(actual);
-  const e = JSON.stringify(expected);
-  if (a !== e) {
-    throw new Error(`${msg}\n  expected: ${e}\n  actual:   ${a}`);
+// ─── Handler ────────────────────────────────────────────────
+
+export async function onRequestGet({ request, env }) {
+  // Defensive: confirm the KV binding actually exists.
+  if (!env.CHUTES_KV) {
+    return errorResponse(
+      'CHUTES_KV binding is missing on this deployment. Check Cloudflare Pages → Settings → Bindings.',
+      500
+    );
   }
-}
 
-function assert(cond, msg) {
-  if (!cond) throw new Error(msg);
-}
-
-// ─── Fixtures ───────────────────────────────────────────────
-
-const sampleCatalog = [
-  {
-    id: 'tunnel-vision',
-    name: 'Tunnel Vision',
-    type: 'winter-chute',
-    topLatLon: [50.8763, -116.91],
-    radiusMeters: 25,
-  },
-  {
-    id: 'cpr-ridge-story',
-    name: 'CPR Ridge Story',
-    type: 'narrative-poi',
-    topLatLon: [50.88, -116.9],
-    radiusMeters: 40,
-  },
-  {
-    id: 'easy-out-pullout',
-    name: 'Easy Out Pullout',
-    type: 'general',
-    topLatLon: [50.87, -116.92],
-    radiusMeters: 25,
-  },
-];
-
-function makeRequest(url, method = 'GET') {
-  return new Request(url, { method });
-}
-
-// ─── Run ─────────────────────────────────────────────────────
-
-(async () => {
-  console.log('Smoke tests for /api/pois\n');
-
-  // S1 — Empty KV → empty array
-  await check('S1 — empty KV returns empty pois array', async () => {
-    const env = { CHUTES_KV: makeKV({}) };
-    const resp = await onRequestGet({
-      request: makeRequest('https://example.com/api/pois'),
-      env,
-    });
-    assertEq(resp.status, 200, 'S1 status');
-    const body = await resp.json();
-    assertEq(body.pois, [], 'S1 pois empty');
-    assertEq(body.count, 0, 'S1 count zero');
-    assertEq(body.schemaVersion, '0.7', 'S1 schemaVersion');
-    assert(typeof body.lastFetched === 'string', 'S1 lastFetched is ISO string');
-  });
-
-  // S2 — Populated KV → returns all POIs
-  await check('S2 — populated KV returns all POIs', async () => {
-    const env = {
-      CHUTES_KV: makeKV({ catalog: JSON.stringify(sampleCatalog) }),
-    };
-    const resp = await onRequestGet({
-      request: makeRequest('https://example.com/api/pois'),
-      env,
-    });
-    assertEq(resp.status, 200, 'S2 status');
-    const body = await resp.json();
-    assertEq(body.count, 3, 'S2 count');
-    assertEq(body.pois.length, 3, 'S2 pois length');
-    assertEq(body.pois[0].id, 'tunnel-vision', 'S2 first id');
-  });
-
-  // S3 — Filter by type=winter-chute
-  await check('S3 — filter by type=winter-chute', async () => {
-    const env = {
-      CHUTES_KV: makeKV({ catalog: JSON.stringify(sampleCatalog) }),
-    };
-    const resp = await onRequestGet({
-      request: makeRequest('https://example.com/api/pois?type=winter-chute'),
-      env,
-    });
-    const body = await resp.json();
-    assertEq(body.count, 1, 'S3 count');
-    assertEq(body.pois[0].id, 'tunnel-vision', 'S3 id');
-  });
-
-  // S4 — Filter by type=narrative-poi
-  await check('S4 — filter by type=narrative-poi', async () => {
-    const env = {
-      CHUTES_KV: makeKV({ catalog: JSON.stringify(sampleCatalog) }),
-    };
-    const resp = await onRequestGet({
-      request: makeRequest('https://example.com/api/pois?type=narrative-poi'),
-      env,
-    });
-    const body = await resp.json();
-    assertEq(body.count, 1, 'S4 count');
-    assertEq(body.pois[0].id, 'cpr-ridge-story', 'S4 id');
-  });
-
-  // S5 — Fetch by id (single POI returned, not wrapped)
-  await check('S5 — fetch by id returns single POI', async () => {
-    const env = {
-      CHUTES_KV: makeKV({ catalog: JSON.stringify(sampleCatalog) }),
-    };
-    const resp = await onRequestGet({
-      request: makeRequest('https://example.com/api/pois?id=tunnel-vision'),
-      env,
-    });
-    assertEq(resp.status, 200, 'S5 status');
-    const body = await resp.json();
-    assertEq(body.id, 'tunnel-vision', 'S5 id');
-    assertEq(body.type, 'winter-chute', 'S5 type');
-  });
-
-  // S6 — Fetch by unknown id → 404
-  await check('S6 — unknown id returns 404', async () => {
-    const env = {
-      CHUTES_KV: makeKV({ catalog: JSON.stringify(sampleCatalog) }),
-    };
-    const resp = await onRequestGet({
-      request: makeRequest('https://example.com/api/pois?id=does-not-exist'),
-      env,
-    });
-    assertEq(resp.status, 404, 'S6 status');
-    const body = await resp.json();
-    assert(body.error.includes('not found'), 'S6 error message');
-  });
-
-  // S7 — Missing CHUTES_KV binding → 500 with clear error
-  await check('S7 — missing CHUTES_KV binding returns clear 500', async () => {
-    const env = {};  // no binding at all
-    const resp = await onRequestGet({
-      request: makeRequest('https://example.com/api/pois'),
-      env,
-    });
-    assertEq(resp.status, 500, 'S7 status');
-    const body = await resp.json();
-    assert(body.error.includes('CHUTES_KV'), 'S7 mentions binding name');
-  });
-
-  // S8 — Corrupted KV value (invalid JSON) → returns empty, no crash
-  await check('S8 — corrupted KV value gracefully returns empty', async () => {
-    const env = {
-      CHUTES_KV: makeKV({ catalog: 'not-valid-json{{' }),
-    };
-    const resp = await onRequestGet({
-      request: makeRequest('https://example.com/api/pois'),
-      env,
-    });
-    assertEq(resp.status, 200, 'S8 status');
-    const body = await resp.json();
-    assertEq(body.count, 0, 'S8 count (treated as empty)');
-  });
-
-  // S9 — POST returns 405 (method not allowed yet)
-  await check('S9 — POST returns 405 until Step 5', async () => {
-    const env = { CHUTES_KV: makeKV({}) };
-    const resp = await onRequest({
-      request: new Request('https://example.com/api/pois', { method: 'POST' }),
-      env,
-    });
-    assertEq(resp.status, 405, 'S9 status');
-    assertEq(resp.headers.get('allow'), 'GET', 'S9 Allow header');
-  });
-
-  // ─── Summary ──────────────────────────────────────────────
-  console.log('');
-  console.log('──────────────────────────────────────');
-  console.log(`  ${passed} passed, ${failed} failed`);
-  console.log('──────────────────────────────────────');
-  if (failed > 0) {
-    console.log('Failures:');
-    failures.forEach(f => console.log(`  - ${f}`));
-    process.exit(1);
+  let catalog;
+  try {
+    catalog = await readCatalog(env.CHUTES_KV);
+  } catch (err) {
+    console.error('Failed to read catalog from KV:', err);
+    return errorResponse('Failed to read catalog from KV', 500);
   }
-})();
+
+  // Filter by id query parameter if provided.
+  const url = new URL(request.url);
+  const idParam = url.searchParams.get('id');
+  const typeParam = url.searchParams.get('type');
+
+  if (idParam) {
+    const found = catalog.find((poi) => poi.id === idParam);
+    if (!found) {
+      return jsonResponse({ error: `POI not found: ${idParam}` }, 404);
+    }
+    return jsonResponse(found);
+  }
+
+  // Optional filter by type.
+  let results = catalog;
+  if (typeParam) {
+    results = catalog.filter((poi) => poi.type === typeParam);
+  }
+
+  return jsonResponse({
+    pois: results,
+    count: results.length,
+    schemaVersion: SCHEMA_VERSION,
+    lastFetched: new Date().toISOString(),
+  });
+}
+
+// Note: methods other than GET (POST, DELETE) are not yet handled.
+// Cloudflare Pages will return a 405 automatically when only onRequestGet
+// is exported. Step 5 will add onRequestPost and onRequestDelete with auth.

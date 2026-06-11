@@ -225,8 +225,7 @@ export async function onRequestPost({ request, env }) {
   // until the bucket's r2.dev subdomain is enabled (one-time Cloudflare task).
   // We compute the URL from the request host to avoid hardcoding.
   // For now, just return the key; the back office can prepend the R2 base.
-  const url = `https://chase-life-media.r2.dev/${key}`;
-
+  const url = `https://pub-deb8eae1e0eb4b55a9753722f77b21b0.r2.dev/${key}`;
   return jsonResponse({
     saved: true,
     url,

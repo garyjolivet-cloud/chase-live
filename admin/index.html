@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chase Life · Back Office</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:     #0a0e14;
+  --panel:   #111820;
+  --card:    #161e28;
+  --rim:     #1e2c3a;
+  --coral:   #ff7c32;
+  --coral-2: #ff5c2e;
+  --ice:     #7dd4f8;
+  --snow:    #e8f4ff;
+  --green:   #22d98a;
+  --danger:  #ff3a5c;
+  --muted:   #4a6070;
+  --text:    #c8dce8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  min-height: 100vh;
+}
+
+button { font-family: inherit; cursor: pointer; border: none; }
+input, textarea, select { font-family: inherit; }
+
+/* ─── Loading screen ─── */
+
+#loading {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--ink);
+  z-index: 100;
+}
+#loading.hidden { display: none; }
+.loading-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ─── Login screen ─── */
+
+#login {
+  display: none;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+#login.active { display: flex; }
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 12px;
+  padding: 32px 28px;
+}
+
+.login-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.login-logo-icon {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--coral), var(--coral-2));
+  border-radius: 10px;
+  display: grid; place-items: center;
+}
+.login-logo-icon svg {
+  width: 26px; height: 26px;
+  fill: #fff;
+}
+.login-logo-text {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.login-logo-text .chase { color: #fff; }
+.login-logo-text .life {
+  background: linear-gradient(90deg, var(--coral), var(--coral-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.login-tagline {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.login-heading {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--snow);
+  margin-bottom: 20px;
+}
+
+.field {
+  margin-bottom: 16px;
+}
+.field label {
+  display: block;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.field input {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--rim);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: var(--snow);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.field input:focus {
+  border-color: var(--coral);
+}
+
+.btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--coral), var(--coral-2));
+  color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 14px;
+  border-radius: 8px;
+  transition: transform 0.05s, opacity 0.15s;
+}
+.btn:hover { opacity: 0.92; }
+.btn:active { transform: scale(0.98); }
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error-msg {
+  display: none;
+  background: rgba(255, 58, 92, 0.1);
+  border: 1px solid rgba(255, 58, 92, 0.3);
+  color: var(--danger);
+  font-size: 0.85rem;
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+.error-msg.show { display: block; }
+
+.login-hint {
+  margin-top: 18px;
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* ─── Dashboard layout ─── */
+
+#dashboard {
+  display: none;
+  min-height: 100vh;
+  flex-direction: column;
+}
+#dashboard.active { display: flex; }
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--rim);
+}
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.topbar-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--coral), var(--coral-2));
+  border-radius: 7px;
+  display: grid; place-items: center;
+}
+.topbar-icon svg {
+  width: 19px; height: 19px;
+  fill: #fff;
+}
+.topbar-title {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 1.05rem;
+  color: #fff;
+  line-height: 1;
+}
+.topbar-sub {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.logout-btn {
+  background: transparent;
+  border: 1px solid var(--rim);
+  color: var(--text);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.logout-btn:hover { border-color: var(--coral); color: var(--coral); }
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-heading {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--snow);
+  margin-bottom: 6px;
+}
+.page-subheading {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.status-card {
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rim);
+  font-size: 0.9rem;
+}
+.status-row:last-child { border-bottom: none; }
+.status-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.status-value {
+  color: var(--snow);
+  font-variant-numeric: tabular-nums;
+}
+.status-value.ok { color: var(--green); }
+.status-value.err { color: var(--danger); }
+
+.placeholder-note {
+  margin-top: 24px;
+  background: rgba(125, 212, 248, 0.06);
+  border: 1px solid rgba(125, 212, 248, 0.25);
+  color: var(--ice);
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.placeholder-note strong { color: #fff; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- Loading splash while we check stored auth -->
+<div id="loading">
+  <div class="loading-text">Loading back office...</div>
+</div>
+
+<!-- Login screen -->
+<section id="login">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg>
+      </div>
+      <div>
+        <div class="login-logo-text"><span class="chase">CHASE</span><span class="life">LIFE</span></div>
+        <div class="login-tagline">Back Office</div>
+      </div>
+    </div>
+
+    <div class="login-heading">Sign in</div>
+
+    <div id="login-error" class="error-msg"></div>
+
+    <div class="field">
+      <label for="token-input">Admin token</label>
+      <input type="password" id="token-input" placeholder="Enter your admin token" autocomplete="off" autofocus>
+    </div>
+
+    <button id="login-btn" class="btn">Sign in</button>
+
+    <div class="login-hint">
+      Your token is the secret you set in Cloudflare.<br>
+      It's stored locally until you close the browser.
+    </div>
+  </div>
+</section>
+
+<!-- Dashboard (post-login) -->
+<section id="dashboard">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="topbar-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg>
+      </div>
+      <div>
+        <div class="topbar-title">CHASE LIFE</div>
+        <div class="topbar-sub">Back Office</div>
+      </div>
+    </div>
+    <button id="logout-btn" class="logout-btn">Sign out</button>
+  </div>
+
+  <div class="main">
+    <div class="page-heading">Dashboard</div>
+    <div class="page-subheading">Welcome back. Step 8 scaffolding is live.</div>
+
+    <div class="status-card">
+      <div class="status-row">
+        <span class="status-label">API endpoint</span>
+        <span id="status-api" class="status-value">checking...</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">POI catalog</span>
+        <span id="status-catalog" class="status-value">checking...</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Admin auth</span>
+        <span id="status-auth" class="status-value">checking...</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Schema version</span>
+        <span id="status-schema" class="status-value">—</span>
+      </div>
+    </div>
+
+    <div class="placeholder-note">
+      <strong>Step 8 complete.</strong> This dashboard confirms the back office shell
+      is wired up correctly: login works, your token is stored in this browser session
+      only, and the API connection is verified. Steps 9-14 will add the POI list,
+      add/edit forms, and image upload to this same page.
+    </div>
+  </div>
+</section>
+
+<script>
+'use strict';
+
+// ─── Constants ────────────────────────────────────────────
+
+const API_BASE = '/api';
+const STORAGE_KEY = 'cl_admin_token';
+
+// ─── Element refs ─────────────────────────────────────────
+
+const $loading   = document.getElementById('loading');
+const $login     = document.getElementById('login');
+const $dashboard = document.getElementById('dashboard');
+const $tokenIn   = document.getElementById('token-input');
+const $loginBtn  = document.getElementById('login-btn');
+const $logoutBtn = document.getElementById('logout-btn');
+const $loginErr  = document.getElementById('login-error');
+const $sApi      = document.getElementById('status-api');
+const $sCatalog  = document.getElementById('status-catalog');
+const $sAuth     = document.getElementById('status-auth');
+const $sSchema   = document.getElementById('status-schema');
+
+// ─── Token storage ────────────────────────────────────────
+
+// We use sessionStorage so the token clears when the browser tab closes.
+// localStorage would persist longer but is a slightly larger attack surface.
+
+function getStoredToken() {
+  try { return sessionStorage.getItem(STORAGE_KEY); }
+  catch { return null; }
+}
+
+function storeToken(token) {
+  try { sessionStorage.setItem(STORAGE_KEY, token); }
+  catch (err) { console.error('Could not store token:', err); }
+}
+
+function clearStoredToken() {
+  try { sessionStorage.removeItem(STORAGE_KEY); }
+  catch {}
+}
+
+// ─── View switching ───────────────────────────────────────
+
+function showLoading() {
+  $loading.classList.remove('hidden');
+  $login.classList.remove('active');
+  $dashboard.classList.remove('active');
+}
+
+function showLogin(errorMsg) {
+  $loading.classList.add('hidden');
+  $login.classList.add('active');
+  $dashboard.classList.remove('active');
+  if (errorMsg) {
+    $loginErr.textContent = errorMsg;
+    $loginErr.classList.add('show');
+  } else {
+    $loginErr.classList.remove('show');
+  }
+  setTimeout(() => $tokenIn.focus(), 50);
+}
+
+function showDashboard() {
+  $loading.classList.add('hidden');
+  $login.classList.remove('active');
+  $dashboard.classList.add('active');
+  runStatusChecks();
+}
+
+// ─── Auth flow ────────────────────────────────────────────
+
+// We "validate" the token by making a tiny authenticated request that doesn't
+// actually change anything. Easiest: POST a malformed body and check whether
+// we get back "Validation failed" (token was good) vs "Invalid admin token"
+// (token was bad). The function rejects before touching KV either way.
+async function validateToken(token) {
+  if (!token || token.length < 4) {
+    throw new Error('Token is too short');
+  }
+  let resp;
+  try {
+    resp = await fetch(`${API_BASE}/pois`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: '{}',  // empty object — will fail validation, but only after auth
+    });
+  } catch (err) {
+    throw new Error('Could not reach the API. Are you online?');
+  }
+  if (resp.status === 401) {
+    throw new Error('Invalid admin token.');
+  }
+  if (resp.status >= 500) {
+    throw new Error(`Server error (${resp.status}). Try again in a moment.`);
+  }
+  // 400 = good token, bad body (expected). 200 = also good (shouldn't happen with {}).
+  return true;
+}
+
+async function attemptLogin() {
+  const token = $tokenIn.value.trim();
+  $loginBtn.disabled = true;
+  $loginErr.classList.remove('show');
+  try {
+    await validateToken(token);
+    storeToken(token);
+    showDashboard();
+  } catch (err) {
+    showLogin(err.message);
+  } finally {
+    $loginBtn.disabled = false;
+  }
+}
+
+function logout() {
+  clearStoredToken();
+  $tokenIn.value = '';
+  showLogin();
+}
+
+// ─── Status checks on dashboard ───────────────────────────
+
+async function runStatusChecks() {
+  // Reset display
+  $sApi.textContent = 'checking...';     $sApi.className = 'status-value';
+  $sCatalog.textContent = 'checking...'; $sCatalog.className = 'status-value';
+  $sAuth.textContent = 'checking...';    $sAuth.className = 'status-value';
+  $sSchema.textContent = '—';
+
+  // Check 1: GET /api/pois (public, no auth)
+  try {
+    const resp = await fetch(`${API_BASE}/pois`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    $sApi.textContent = 'reachable';
+    $sApi.className = 'status-value ok';
+    $sCatalog.textContent = `${data.count ?? 0} POIs`;
+    $sCatalog.className = 'status-value ok';
+    if (data.schemaVersion) {
+      $sSchema.textContent = data.schemaVersion;
+    }
+  } catch (err) {
+    $sApi.textContent = 'unreachable';
+    $sApi.className = 'status-value err';
+    $sCatalog.textContent = '—';
+    $sCatalog.className = 'status-value err';
+  }
+
+  // Check 2: re-validate stored token
+  try {
+    await validateToken(getStoredToken());
+    $sAuth.textContent = 'valid';
+    $sAuth.className = 'status-value ok';
+  } catch (err) {
+    $sAuth.textContent = 'invalid';
+    $sAuth.className = 'status-value err';
+    // If the token is no longer valid, kick back to login.
+    setTimeout(() => logout(), 1500);
+  }
+}
+
+// ─── Wire events ──────────────────────────────────────────
+
+$loginBtn.addEventListener('click', attemptLogin);
+$tokenIn.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') attemptLogin();
+});
+$logoutBtn.addEventListener('click', logout);
+
+// ─── Bootstrap ────────────────────────────────────────────
+
+(async function init() {
+  showLoading();
+  const stored = getStoredToken();
+  if (stored) {
+    // Try to revalidate. If still good, skip login.
+    try {
+      await validateToken(stored);
+      showDashboard();
+      return;
+    } catch (err) {
+      clearStoredToken();
+      // Fall through to login
+    }
+  }
+  showLogin();
+})();
+</script>
+
+</body>
+</html>

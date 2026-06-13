@@ -10,12 +10,15 @@
   --ink:     #0a0e14;
   --panel:   #111820;
   --card:    #161e28;
+  --card-2:  #1a2330;
   --rim:     #1e2c3a;
+  --rim-hi:  #2a3d52;
   --coral:   #ff7c32;
   --coral-2: #ff5c2e;
   --ice:     #7dd4f8;
   --snow:    #e8f4ff;
   --green:   #22d98a;
+  --amber:   #ffc34d;
   --danger:  #ff3a5c;
   --muted:   #4a6070;
   --text:    #c8dce8;
@@ -82,10 +85,7 @@ input, textarea, select { font-family: inherit; }
   border-radius: 10px;
   display: grid; place-items: center;
 }
-.login-logo-icon svg {
-  width: 26px; height: 26px;
-  fill: #fff;
-}
+.login-logo-icon svg { width: 26px; height: 26px; fill: #fff; }
 .login-logo-text {
   font-family: 'Black Han Sans', sans-serif;
   font-size: 1.3rem;
@@ -118,9 +118,7 @@ input, textarea, select { font-family: inherit; }
   margin-bottom: 20px;
 }
 
-.field {
-  margin-bottom: 16px;
-}
+.field { margin-bottom: 16px; }
 .field label {
   display: block;
   font-family: 'Barlow Condensed', sans-serif;
@@ -141,29 +139,33 @@ input, textarea, select { font-family: inherit; }
   outline: none;
   transition: border-color 0.15s;
 }
-.field input:focus {
-  border-color: var(--coral);
-}
+.field input:focus { border-color: var(--coral); }
 
 .btn {
-  width: 100%;
   background: linear-gradient(135deg, var(--coral), var(--coral-2));
   color: #fff;
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  padding: 14px;
+  padding: 12px 20px;
   border-radius: 8px;
   transition: transform 0.05s, opacity 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
+.btn.block { width: 100%; padding: 14px; font-size: 0.95rem; }
 .btn:hover { opacity: 0.92; }
 .btn:active { transform: scale(0.98); }
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn.ghost {
+  background: transparent;
+  border: 1px solid var(--rim);
+  color: var(--text);
 }
+.btn.ghost:hover { border-color: var(--coral); color: var(--coral); opacity: 1; }
 
 .error-msg {
   display: none;
@@ -202,21 +204,14 @@ input, textarea, select { font-family: inherit; }
   background: var(--panel);
   border-bottom: 1px solid var(--rim);
 }
-.topbar-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.topbar-logo { display: flex; align-items: center; gap: 10px; }
 .topbar-icon {
   width: 32px; height: 32px;
   background: linear-gradient(135deg, var(--coral), var(--coral-2));
   border-radius: 7px;
   display: grid; place-items: center;
 }
-.topbar-icon svg {
-  width: 19px; height: 19px;
-  fill: #fff;
-}
+.topbar-icon svg { width: 19px; height: 19px; fill: #fff; }
 .topbar-title {
   font-family: 'Black Han Sans', sans-serif;
   font-size: 1.05rem;
@@ -246,15 +241,58 @@ input, textarea, select { font-family: inherit; }
 }
 .logout-btn:hover { border-color: var(--coral); color: var(--coral); }
 
+/* ─── Tab strip ─── */
+
+.tabs {
+  display: flex;
+  background: var(--panel);
+  border-bottom: 1px solid var(--rim);
+  padding: 0 20px;
+  gap: 4px;
+}
+.tab {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 14px 18px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  margin-bottom: -1px;
+}
+.tab:hover { color: var(--text); }
+.tab.active {
+  color: var(--snow);
+  border-bottom-color: var(--coral);
+}
+
+/* ─── Main content area ─── */
+
 .main {
   flex: 1;
   display: flex;
   flex-direction: column;
   padding: 24px 20px;
-  max-width: 800px;
+  max-width: 960px;
   margin: 0 auto;
   width: 100%;
 }
+
+.view { display: none; }
+.view.active { display: block; }
+
+.view-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.view-header-left { flex: 1; min-width: 200px; }
 
 .page-heading {
   font-family: 'Barlow Condensed', sans-serif;
@@ -263,13 +301,20 @@ input, textarea, select { font-family: inherit; }
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--snow);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 .page-subheading {
   font-size: 0.85rem;
   color: var(--muted);
-  margin-bottom: 24px;
 }
+
+.view-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ─── Dashboard status card ─── */
 
 .status-card {
   background: var(--card);
@@ -312,14 +357,291 @@ input, textarea, select { font-family: inherit; }
   line-height: 1.5;
 }
 .placeholder-note strong { color: #fff; font-weight: 600; }
+
+/* ─── POI list filter bar ─── */
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 10px;
+}
+.filter-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.pill {
+  background: transparent;
+  border: 1px solid var(--rim);
+  color: var(--muted);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 999px;
+  transition: all 0.15s;
+}
+.pill:hover { border-color: var(--rim-hi); color: var(--text); }
+.pill.active {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: #fff;
+}
+.pill .count {
+  background: rgba(255,255,255,0.18);
+  border-radius: 999px;
+  padding: 1px 7px;
+  margin-left: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.pill:not(.active) .count {
+  background: var(--rim);
+  color: var(--muted);
+}
+
+.sort-select {
+  background: var(--panel);
+  border: 1px solid var(--rim);
+  color: var(--text);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 7px 14px 7px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  outline: none;
+}
+.sort-select:focus { border-color: var(--coral); }
+
+/* ─── POI cards ─── */
+
+.poi-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.poi-card {
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 10px;
+  padding: 16px 18px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.poi-card:hover {
+  border-color: var(--rim-hi);
+  background: var(--card-2);
+}
+
+.poi-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.poi-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.poi-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--snow);
+  letter-spacing: 0.02em;
+}
+
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.type-winter-chute {
+  background: rgba(255, 124, 50, 0.15);
+  color: var(--coral);
+  border: 1px solid rgba(255, 124, 50, 0.4);
+}
+.type-narrative-poi {
+  background: rgba(125, 212, 248, 0.1);
+  color: var(--ice);
+  border: 1px solid rgba(125, 212, 248, 0.35);
+}
+.type-general {
+  background: rgba(200, 220, 232, 0.06);
+  color: var(--text);
+  border: 1px solid var(--rim);
+}
+
+.poi-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.icon-btn {
+  background: transparent;
+  border: 1px solid var(--rim);
+  color: var(--muted);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+.icon-btn:hover { border-color: var(--coral); color: var(--coral); }
+
+.poi-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px 16px;
+  font-size: 0.82rem;
+}
+.poi-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.poi-meta-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.poi-meta-value {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.poi-flags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.flag {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+.flag-warn {
+  background: rgba(255, 195, 77, 0.12);
+  color: var(--amber);
+  border: 1px solid rgba(255, 195, 77, 0.3);
+}
+.flag-info {
+  background: rgba(125, 212, 248, 0.08);
+  color: var(--ice);
+  border: 1px solid rgba(125, 212, 248, 0.25);
+}
+
+/* ─── Empty state ─── */
+
+.empty-state {
+  background: var(--card);
+  border: 1px dashed var(--rim);
+  border-radius: 10px;
+  padding: 48px 24px;
+  text-align: center;
+}
+.empty-state-icon {
+  width: 56px; height: 56px;
+  margin: 0 auto 16px;
+  background: var(--panel);
+  border-radius: 12px;
+  display: grid; place-items: center;
+  color: var(--muted);
+}
+.empty-state-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--snow);
+  margin-bottom: 6px;
+}
+.empty-state-text {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin-bottom: 16px;
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
+/* ─── Toast notifications ─── */
+
+#toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  color: var(--text);
+  max-width: 320px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  animation: toast-in 0.2s ease-out;
+}
+.toast.err { border-color: rgba(255, 58, 92, 0.4); color: var(--danger); }
+.toast.ok  { border-color: rgba(34, 217, 138, 0.4); color: var(--green); }
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  .topbar { padding: 12px 16px; }
+  .main { padding: 18px 14px; }
+  .tabs { padding: 0 10px; }
+  .tab { padding: 12px 12px; font-size: 0.8rem; }
+}
 </style>
 </head>
 <body>
 
-<!-- Loading splash while we check stored auth -->
+<!-- Loading splash -->
 <div id="loading">
   <div class="loading-text">Loading back office...</div>
 </div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
 
 <!-- Login screen -->
 <section id="login">
@@ -335,7 +657,6 @@ input, textarea, select { font-family: inherit; }
     </div>
 
     <div class="login-heading">Sign in</div>
-
     <div id="login-error" class="error-msg"></div>
 
     <div class="field">
@@ -343,7 +664,7 @@ input, textarea, select { font-family: inherit; }
       <input type="password" id="token-input" placeholder="Enter your admin token" autocomplete="off" autofocus>
     </div>
 
-    <button id="login-btn" class="btn">Sign in</button>
+    <button id="login-btn" class="btn block">Sign in</button>
 
     <div class="login-hint">
       Your token is the secret you set in Cloudflare.<br>
@@ -352,7 +673,7 @@ input, textarea, select { font-family: inherit; }
   </div>
 </section>
 
-<!-- Dashboard (post-login) -->
+<!-- Dashboard -->
 <section id="dashboard">
   <div class="topbar">
     <div class="topbar-logo">
@@ -367,35 +688,81 @@ input, textarea, select { font-family: inherit; }
     <button id="logout-btn" class="logout-btn">Sign out</button>
   </div>
 
+  <nav class="tabs">
+    <button class="tab" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="pois">POIs</button>
+  </nav>
+
   <div class="main">
-    <div class="page-heading">Dashboard</div>
-    <div class="page-subheading">Welcome back. Step 8 scaffolding is live.</div>
 
-    <div class="status-card">
-      <div class="status-row">
-        <span class="status-label">API endpoint</span>
-        <span id="status-api" class="status-value">checking...</span>
+    <!-- Dashboard view -->
+    <div class="view" id="view-dashboard">
+      <div class="view-header">
+        <div class="view-header-left">
+          <div class="page-heading">Dashboard</div>
+          <div class="page-subheading">System status &amp; quick overview</div>
+        </div>
       </div>
-      <div class="status-row">
-        <span class="status-label">POI catalog</span>
-        <span id="status-catalog" class="status-value">checking...</span>
+
+      <div class="status-card">
+        <div class="status-row">
+          <span class="status-label">API endpoint</span>
+          <span id="status-api" class="status-value">checking...</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">POI catalog</span>
+          <span id="status-catalog" class="status-value">checking...</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">Admin auth</span>
+          <span id="status-auth" class="status-value">checking...</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">Schema version</span>
+          <span id="status-schema" class="status-value">—</span>
+        </div>
       </div>
-      <div class="status-row">
-        <span class="status-label">Admin auth</span>
-        <span id="status-auth" class="status-value">checking...</span>
-      </div>
-      <div class="status-row">
-        <span class="status-label">Schema version</span>
-        <span id="status-schema" class="status-value">—</span>
+
+      <div class="placeholder-note">
+        <strong>Steps 8 + 9 complete.</strong> Scaffolding is live and the POI
+        list view is wired up. Switch to the POIs tab to see what's in the catalog.
+        Step 10 will add the "New POI" form.
       </div>
     </div>
 
-    <div class="placeholder-note">
-      <strong>Step 8 complete.</strong> This dashboard confirms the back office shell
-      is wired up correctly: login works, your token is stored in this browser session
-      only, and the API connection is verified. Steps 9-14 will add the POI list,
-      add/edit forms, and image upload to this same page.
+    <!-- POIs view -->
+    <div class="view" id="view-pois">
+      <div class="view-header">
+        <div class="view-header-left">
+          <div class="page-heading">POIs</div>
+          <div id="poi-subheading" class="page-subheading">Loading...</div>
+        </div>
+        <div class="view-actions">
+          <button id="refresh-btn" class="btn ghost">Refresh</button>
+          <button id="add-btn" class="btn" disabled title="Step 10 will enable this">+ Add POI</button>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-pills" id="filter-pills">
+          <button class="pill active" data-filter="all">All <span class="count" id="count-all">0</span></button>
+          <button class="pill" data-filter="winter-chute">Winter chutes <span class="count" id="count-winter-chute">0</span></button>
+          <button class="pill" data-filter="narrative-poi">Narrative <span class="count" id="count-narrative-poi">0</span></button>
+          <button class="pill" data-filter="general">General <span class="count" id="count-general">0</span></button>
+        </div>
+        <select class="sort-select" id="sort-select">
+          <option value="updated-desc">Newest first</option>
+          <option value="updated-asc">Oldest first</option>
+          <option value="name-asc">Name A → Z</option>
+          <option value="name-desc">Name Z → A</option>
+        </select>
+      </div>
+
+      <div id="poi-list-container">
+        <!-- POI cards or empty state injected here -->
+      </div>
     </div>
+
   </div>
 </section>
 
@@ -406,6 +773,20 @@ input, textarea, select { font-family: inherit; }
 
 const API_BASE = '/api';
 const STORAGE_KEY = 'cl_admin_token';
+const TYPE_LABELS = {
+  'winter-chute':  'Winter Chute',
+  'narrative-poi': 'Narrative',
+  'general':       'General',
+};
+
+// ─── State ────────────────────────────────────────────────
+
+const state = {
+  pois: [],
+  filter: 'all',      // 'all' | 'winter-chute' | 'narrative-poi' | 'general'
+  sort:   'updated-desc',
+  loadedAt: null,
+};
 
 // ─── Element refs ─────────────────────────────────────────
 
@@ -420,25 +801,39 @@ const $sApi      = document.getElementById('status-api');
 const $sCatalog  = document.getElementById('status-catalog');
 const $sAuth     = document.getElementById('status-auth');
 const $sSchema   = document.getElementById('status-schema');
+const $refreshBtn = document.getElementById('refresh-btn');
+const $addBtn     = document.getElementById('add-btn');
+const $listContainer = document.getElementById('poi-list-container');
+const $poiSubheading = document.getElementById('poi-subheading');
+const $sortSelect    = document.getElementById('sort-select');
+const $filterPills   = document.getElementById('filter-pills');
+const $toastContainer = document.getElementById('toast-container');
 
 // ─── Token storage ────────────────────────────────────────
 
-// We use sessionStorage so the token clears when the browser tab closes.
-// localStorage would persist longer but is a slightly larger attack surface.
-
 function getStoredToken() {
-  try { return sessionStorage.getItem(STORAGE_KEY); }
-  catch { return null; }
+  try { return sessionStorage.getItem(STORAGE_KEY); } catch { return null; }
 }
-
 function storeToken(token) {
   try { sessionStorage.setItem(STORAGE_KEY, token); }
   catch (err) { console.error('Could not store token:', err); }
 }
-
 function clearStoredToken() {
-  try { sessionStorage.removeItem(STORAGE_KEY); }
-  catch {}
+  try { sessionStorage.removeItem(STORAGE_KEY); } catch {}
+}
+
+// ─── Toasts ───────────────────────────────────────────────
+
+function toast(msg, kind = '') {
+  const el = document.createElement('div');
+  el.className = 'toast' + (kind ? ' ' + kind : '');
+  el.textContent = msg;
+  $toastContainer.appendChild(el);
+  setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transition = 'opacity 0.3s';
+    setTimeout(() => el.remove(), 300);
+  }, 3500);
 }
 
 // ─── View switching ───────────────────────────────────────
@@ -448,7 +843,6 @@ function showLoading() {
   $login.classList.remove('active');
   $dashboard.classList.remove('active');
 }
-
 function showLogin(errorMsg) {
   $loading.classList.add('hidden');
   $login.classList.add('active');
@@ -461,24 +855,44 @@ function showLogin(errorMsg) {
   }
   setTimeout(() => $tokenIn.focus(), 50);
 }
-
 function showDashboard() {
   $loading.classList.add('hidden');
   $login.classList.remove('active');
   $dashboard.classList.add('active');
+  const tab = (window.location.hash || '').replace('#', '') || 'dashboard';
+  setActiveTab(tab);
   runStatusChecks();
 }
 
+// ─── Tab system ───────────────────────────────────────────
+
+function setActiveTab(name) {
+  const valid = ['dashboard', 'pois'];
+  if (!valid.includes(name)) name = 'dashboard';
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === name);
+  });
+  document.querySelectorAll('.view').forEach(v => {
+    v.classList.toggle('active', v.id === 'view-' + name);
+  });
+  if (window.location.hash !== '#' + name) {
+    history.replaceState(null, '', '#' + name);
+  }
+  if (name === 'pois') loadPOIs();
+}
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => setActiveTab(t.dataset.tab));
+});
+window.addEventListener('hashchange', () => {
+  const tab = window.location.hash.replace('#', '') || 'dashboard';
+  setActiveTab(tab);
+});
+
 // ─── Auth flow ────────────────────────────────────────────
 
-// We "validate" the token by making a tiny authenticated request that doesn't
-// actually change anything. Easiest: POST a malformed body and check whether
-// we get back "Validation failed" (token was good) vs "Invalid admin token"
-// (token was bad). The function rejects before touching KV either way.
 async function validateToken(token) {
-  if (!token || token.length < 4) {
-    throw new Error('Token is too short');
-  }
+  if (!token || token.length < 4) throw new Error('Token is too short');
   let resp;
   try {
     resp = await fetch(`${API_BASE}/pois`, {
@@ -487,18 +901,13 @@ async function validateToken(token) {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: '{}',  // empty object — will fail validation, but only after auth
+      body: '{}',
     });
   } catch (err) {
     throw new Error('Could not reach the API. Are you online?');
   }
-  if (resp.status === 401) {
-    throw new Error('Invalid admin token.');
-  }
-  if (resp.status >= 500) {
-    throw new Error(`Server error (${resp.status}). Try again in a moment.`);
-  }
-  // 400 = good token, bad body (expected). 200 = also good (shouldn't happen with {}).
+  if (resp.status === 401) throw new Error('Invalid admin token.');
+  if (resp.status >= 500) throw new Error(`Server error (${resp.status}). Try again in a moment.`);
   return true;
 }
 
@@ -520,19 +929,18 @@ async function attemptLogin() {
 function logout() {
   clearStoredToken();
   $tokenIn.value = '';
+  state.pois = [];
   showLogin();
 }
 
-// ─── Status checks on dashboard ───────────────────────────
+// ─── Status checks ────────────────────────────────────────
 
 async function runStatusChecks() {
-  // Reset display
   $sApi.textContent = 'checking...';     $sApi.className = 'status-value';
   $sCatalog.textContent = 'checking...'; $sCatalog.className = 'status-value';
   $sAuth.textContent = 'checking...';    $sAuth.className = 'status-value';
   $sSchema.textContent = '—';
 
-  // Check 1: GET /api/pois (public, no auth)
   try {
     const resp = await fetch(`${API_BASE}/pois`);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
@@ -541,9 +949,7 @@ async function runStatusChecks() {
     $sApi.className = 'status-value ok';
     $sCatalog.textContent = `${data.count ?? 0} POIs`;
     $sCatalog.className = 'status-value ok';
-    if (data.schemaVersion) {
-      $sSchema.textContent = data.schemaVersion;
-    }
+    if (data.schemaVersion) $sSchema.textContent = data.schemaVersion;
   } catch (err) {
     $sApi.textContent = 'unreachable';
     $sApi.className = 'status-value err';
@@ -551,7 +957,6 @@ async function runStatusChecks() {
     $sCatalog.className = 'status-value err';
   }
 
-  // Check 2: re-validate stored token
   try {
     await validateToken(getStoredToken());
     $sAuth.textContent = 'valid';
@@ -559,17 +964,273 @@ async function runStatusChecks() {
   } catch (err) {
     $sAuth.textContent = 'invalid';
     $sAuth.className = 'status-value err';
-    // If the token is no longer valid, kick back to login.
     setTimeout(() => logout(), 1500);
   }
 }
 
-// ─── Wire events ──────────────────────────────────────────
+// ─── POI list: load + render ──────────────────────────────
+
+async function loadPOIs() {
+  $poiSubheading.textContent = 'Loading...';
+  try {
+    const resp = await fetch(`${API_BASE}/pois`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    state.pois = Array.isArray(data.pois) ? data.pois : [];
+    state.loadedAt = new Date();
+    renderPOIList();
+  } catch (err) {
+    $poiSubheading.textContent = 'Failed to load';
+    $listContainer.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        </div>
+        <div class="empty-state-title">Couldn't load POIs</div>
+        <div class="empty-state-text">${escapeHTML(err.message)}</div>
+        <button class="btn ghost" onclick="loadPOIs()">Try again</button>
+      </div>
+    `;
+    toast('Failed to load POIs: ' + err.message, 'err');
+  }
+}
+
+function renderPOIList() {
+  // Update counts
+  const counts = { all: state.pois.length, 'winter-chute': 0, 'narrative-poi': 0, 'general': 0 };
+  for (const poi of state.pois) {
+    if (counts[poi.type] !== undefined) counts[poi.type]++;
+  }
+  document.getElementById('count-all').textContent = counts.all;
+  document.getElementById('count-winter-chute').textContent = counts['winter-chute'];
+  document.getElementById('count-narrative-poi').textContent = counts['narrative-poi'];
+  document.getElementById('count-general').textContent = counts.general;
+
+  // Filter
+  let filtered = state.pois;
+  if (state.filter !== 'all') {
+    filtered = filtered.filter(p => p.type === state.filter);
+  }
+
+  // Sort
+  filtered = [...filtered].sort(sortComparator(state.sort));
+
+  // Subheading
+  const total = state.pois.length;
+  const shown = filtered.length;
+  if (total === 0) {
+    $poiSubheading.textContent = 'No POIs in the catalog yet';
+  } else if (shown === total) {
+    $poiSubheading.textContent = `${total} ${total === 1 ? 'POI' : 'POIs'} · loaded ${formatTime(state.loadedAt)}`;
+  } else {
+    $poiSubheading.textContent = `${shown} of ${total} POIs · loaded ${formatTime(state.loadedAt)}`;
+  }
+
+  // Render
+  if (state.pois.length === 0) {
+    $listContainer.innerHTML = renderEmptyState();
+  } else if (filtered.length === 0) {
+    $listContainer.innerHTML = renderFilteredEmpty();
+  } else {
+    $listContainer.innerHTML = `<div class="poi-list">${filtered.map(renderPOICard).join('')}</div>`;
+  }
+}
+
+function sortComparator(sortKey) {
+  switch (sortKey) {
+    case 'name-asc':     return (a,b) => (a.name||'').localeCompare(b.name||'');
+    case 'name-desc':    return (a,b) => (b.name||'').localeCompare(a.name||'');
+    case 'updated-asc':  return (a,b) => new Date(a.updatedAt||0) - new Date(b.updatedAt||0);
+    case 'updated-desc':
+    default:             return (a,b) => new Date(b.updatedAt||0) - new Date(a.updatedAt||0);
+  }
+}
+
+function renderPOICard(poi) {
+  const typeClass = `type-${poi.type}`;
+  const typeLabel = TYPE_LABELS[poi.type] || poi.type;
+  const coords = Array.isArray(poi.topLatLon)
+    ? `${poi.topLatLon[0].toFixed(4)}, ${poi.topLatLon[1].toFixed(4)}`
+    : '—';
+  const radius = poi.radiusMeters ? `${poi.radiusMeters} m` : '—';
+  const region = poi.region || '—';
+  const updated = poi.updatedAt ? formatDate(poi.updatedAt) : '—';
+
+  // Build flags
+  const flags = [];
+  if (poi.needsRoping) flags.push({ label: 'Needs roping', cls: 'flag-warn' });
+  if (poi.closesEarly) flags.push({ label: 'Closes early', cls: 'flag-warn' });
+  if (poi.experimental) flags.push({ label: 'Experimental', cls: 'flag-warn' });
+  if (poi.patrolControlled) flags.push({ label: 'Patrol-ctrl', cls: 'flag-info' });
+  if (poi.skiedThisSeason) flags.push({ label: 'Skied 25-26', cls: 'flag-info' });
+  if (poi.bookmarked) flags.push({ label: 'Bookmarked', cls: 'flag-info' });
+
+  // Type-specific meta rows
+  let extraMeta = '';
+  if (poi.type === 'winter-chute') {
+    const slope = (poi.slopeMin_deg !== undefined && poi.slopeMax_deg !== undefined)
+      ? `${poi.slopeMin_deg}-${poi.slopeMax_deg}°` : '—';
+    const storm = poi.stormDirPreference || '—';
+    extraMeta = `
+      <div class="poi-meta-item">
+        <div class="poi-meta-label">Slope</div>
+        <div class="poi-meta-value">${escapeHTML(slope)}</div>
+      </div>
+      <div class="poi-meta-item">
+        <div class="poi-meta-label">Storm dir</div>
+        <div class="poi-meta-value">${escapeHTML(storm)}</div>
+      </div>
+    `;
+  } else if (poi.type === 'narrative-poi') {
+    const season = poi.season || 'any';
+    extraMeta = `
+      <div class="poi-meta-item">
+        <div class="poi-meta-label">Season</div>
+        <div class="poi-meta-value">${escapeHTML(season)}</div>
+      </div>
+      <div class="poi-meta-item">
+        <div class="poi-meta-label">Audio</div>
+        <div class="poi-meta-value">${poi.audioUrl ? 'yes' : '—'}</div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="poi-card">
+      <div class="poi-card-top">
+        <div class="poi-name-row">
+          <span class="type-badge ${typeClass}">${escapeHTML(typeLabel)}</span>
+          <span class="poi-name">${escapeHTML(poi.name || poi.id || '(unnamed)')}</span>
+        </div>
+        <div class="poi-actions">
+          <button class="icon-btn" disabled title="Step 11 will enable this">Edit</button>
+          <button class="icon-btn" disabled title="Step 11 will enable this">Delete</button>
+        </div>
+      </div>
+      <div class="poi-meta">
+        <div class="poi-meta-item">
+          <div class="poi-meta-label">ID</div>
+          <div class="poi-meta-value">${escapeHTML(poi.id || '—')}</div>
+        </div>
+        <div class="poi-meta-item">
+          <div class="poi-meta-label">Region</div>
+          <div class="poi-meta-value">${escapeHTML(region)}</div>
+        </div>
+        <div class="poi-meta-item">
+          <div class="poi-meta-label">Coords</div>
+          <div class="poi-meta-value">${escapeHTML(coords)}</div>
+        </div>
+        <div class="poi-meta-item">
+          <div class="poi-meta-label">Radius</div>
+          <div class="poi-meta-value">${escapeHTML(radius)}</div>
+        </div>
+        ${extraMeta}
+        <div class="poi-meta-item">
+          <div class="poi-meta-label">Updated</div>
+          <div class="poi-meta-value">${escapeHTML(updated)}</div>
+        </div>
+      </div>
+      ${flags.length ? `<div class="poi-flags">${flags.map(f => `<span class="flag ${f.cls}">${f.label}</span>`).join('')}</div>` : ''}
+    </div>
+  `;
+}
+
+function renderEmptyState() {
+  return `
+    <div class="empty-state">
+      <div class="empty-state-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L4 6v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V6l-8-4zm0 6l4 2v4c0 3-1.7 6-4 7-2.3-1-4-4-4-7v-4l4-2z"/>
+        </svg>
+      </div>
+      <div class="empty-state-title">No POIs yet</div>
+      <div class="empty-state-text">
+        The catalog is empty. Once Step 10 ships, you'll be able to add chutes,
+        narrative POIs, and general locations from this page. For now you can
+        also add them via the API directly.
+      </div>
+    </div>
+  `;
+}
+
+function renderFilteredEmpty() {
+  const typeName = TYPE_LABELS[state.filter] || state.filter;
+  return `
+    <div class="empty-state">
+      <div class="empty-state-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      </div>
+      <div class="empty-state-title">No ${escapeHTML(typeName.toLowerCase())} POIs</div>
+      <div class="empty-state-text">
+        Nothing matches this filter. Try a different category or
+        <a href="#" id="reset-filter" style="color: var(--coral);">clear the filter</a>.
+      </div>
+    </div>
+  `;
+}
+
+// Use event delegation for the "clear the filter" link inside the empty state
+$listContainer.addEventListener('click', (e) => {
+  if (e.target.id === 'reset-filter') {
+    e.preventDefault();
+    setFilter('all');
+  }
+});
+
+// ─── Filter + sort handlers ───────────────────────────────
+
+function setFilter(filter) {
+  state.filter = filter;
+  document.querySelectorAll('.pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.filter === filter);
+  });
+  renderPOIList();
+}
+
+$filterPills.addEventListener('click', (e) => {
+  const pill = e.target.closest('.pill');
+  if (pill) setFilter(pill.dataset.filter);
+});
+
+$sortSelect.addEventListener('change', () => {
+  state.sort = $sortSelect.value;
+  renderPOIList();
+});
+
+$refreshBtn.addEventListener('click', () => {
+  loadPOIs();
+  toast('Refreshing POI list...');
+});
+
+// ─── Formatting helpers ───────────────────────────────────
+
+function escapeHTML(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function formatDate(isoStr) {
+  try {
+    const d = new Date(isoStr);
+    if (isNaN(d)) return '—';
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  } catch { return '—'; }
+}
+
+function formatTime(d) {
+  if (!d) return '—';
+  return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+}
+
+// ─── Wire login events ────────────────────────────────────
 
 $loginBtn.addEventListener('click', attemptLogin);
-$tokenIn.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') attemptLogin();
-});
+$tokenIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') attemptLogin(); });
 $logoutBtn.addEventListener('click', logout);
 
 // ─── Bootstrap ────────────────────────────────────────────
@@ -578,18 +1239,19 @@ $logoutBtn.addEventListener('click', logout);
   showLoading();
   const stored = getStoredToken();
   if (stored) {
-    // Try to revalidate. If still good, skip login.
     try {
       await validateToken(stored);
       showDashboard();
       return;
     } catch (err) {
       clearStoredToken();
-      // Fall through to login
     }
   }
   showLogin();
 })();
+
+// Expose loadPOIs globally so the "Try again" button in error states can call it
+window.loadPOIs = loadPOIs;
 </script>
 
 </body>

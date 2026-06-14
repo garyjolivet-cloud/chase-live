@@ -732,11 +732,28 @@ input, textarea, select { font-family: inherit; }
 <!-- Save success modal -->
 <div class="modal-backdrop" id="save-modal">
   <div class="modal">
-    <h3>POI Saved</h3>
+    <h3 id="save-modal-title">POI Saved</h3>
     <p id="save-modal-text">Your POI has been saved to the catalog.</p>
     <div class="modal-buttons">
       <button class="btn ghost" id="save-close-btn">Back to list</button>
       <button class="btn" id="save-another-btn">Add another</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete confirmation modal -->
+<div class="modal-backdrop" id="delete-modal">
+  <div class="modal">
+    <h3>Delete POI?</h3>
+    <p id="delete-modal-text">This cannot be undone.</p>
+    <div class="field" style="margin-bottom: 18px;">
+      <label for="delete-confirm-input">Type the POI name to confirm</label>
+      <input type="text" id="delete-confirm-input" placeholder="POI name" autocomplete="off">
+      <div class="hint" id="delete-confirm-hint">Names must match exactly.</div>
+    </div>
+    <div class="modal-buttons">
+      <button class="btn ghost" id="delete-cancel-btn">Cancel</button>
+      <button class="btn" id="delete-confirm-btn" disabled style="background: var(--danger);">Delete</button>
     </div>
   </div>
 </div>
@@ -804,9 +821,10 @@ input, textarea, select { font-family: inherit; }
         <div class="status-row"><span class="status-label">Schema version</span><span id="status-schema" class="status-value">—</span></div>
       </div>
       <div class="placeholder-note">
-        <strong>Steps 8 + 9 + 10 complete.</strong> The back office is now functional —
-        you can add POIs from the POIs tab. Step 11 will add edit/delete; Step 12 will
-        add image upload from the form.
+        <strong>Steps 8 + 9 + 10 + 11 complete.</strong> The back office is fully
+        functional for managing POIs — you can add, edit, and delete them.
+        Step 12 will add image upload directly from the form; Step 13 will add
+        a map view.
       </div>
     </div>
 
@@ -1084,9 +1102,10 @@ const state = {
   filter: 'all',
   sort: 'updated-desc',
   loadedAt: null,
-  form: null,        // current form state (null when not editing)
+  form: null,        // current form state (null when not active)
   idLocked: false,   // true once user has manually edited the ID field
   saving: false,
+  editingId: null,   // null = creating new; string = editing existing POI by id
 };
 
 // ─── Element refs ─────────────────────────────────────────
@@ -1363,15 +1382,15 @@ function renderPOICard(poi) {
   }
 
   return `
-    <div class="poi-card">
+    <div class="poi-card" data-poi-id="${escapeHTML(poi.id || '')}">
       <div class="poi-card-top">
         <div class="poi-name-row">
           <span class="type-badge ${typeClass}">${escapeHTML(typeLabel)}</span>
           <span class="poi-name">${escapeHTML(poi.name || poi.id || '(unnamed)')}</span>
         </div>
         <div class="poi-actions">
-          <button class="icon-btn" disabled title="Step 11 will enable this">Edit</button>
-          <button class="icon-btn" disabled title="Step 11 will enable this">Delete</button>
+          <button class="icon-btn poi-edit-btn" data-poi-id="${escapeHTML(poi.id || '')}">Edit</button>
+          <button class="icon-btn poi-delete-btn" data-poi-id="${escapeHTML(poi.id || '')}">Delete</button>
         </div>
       </div>
       <div class="poi-meta">
@@ -1418,7 +1437,11 @@ function renderFilteredEmpty() {
 }
 
 $listContainer.addEventListener('click', (e) => {
-  if (e.target.id === 'reset-filter') { e.preventDefault(); setFilter('all'); }
+  if (e.target.id === 'reset-filter') { e.preventDefault(); setFilter('all'); return; }
+  const editBtn = e.target.closest('.poi-edit-btn');
+  if (editBtn) { openEditForm(editBtn.dataset.poiId); return; }
+  const deleteBtn = e.target.closest('.poi-delete-btn');
+  if (deleteBtn) { openDeleteModal(deleteBtn.dataset.poiId); return; }
 });
 
 function setFilter(filter) {
@@ -1438,8 +1461,8 @@ $refreshBtn.addEventListener('click', () => { loadPOIs(); toast('Refreshing POI 
 
 // ─── Form: open / reset / wire ────────────────────────────
 
-function openAddForm() {
-  state.form = {
+function blankFormState() {
+  return {
     type: null,
     id: '', name: '', region: '', geoDescription: '', notes: '',
     topLat: '', topLon: '', radiusMeters: '',
@@ -1455,9 +1478,9 @@ function openAddForm() {
     // narrative-poi
     audioUrl: '', narrativeText: '', season: 'any', narrativeAudioAutoPlay: true,
   };
-  state.idLocked = false;
-  state.saving = false;
+}
 
+function resetFormUI() {
   // Clear inputs
   document.querySelectorAll('#view-form input, #view-form textarea, #view-form select').forEach(el => {
     if (el.type === 'checkbox') el.checked = false;
@@ -1481,6 +1504,18 @@ function openAddForm() {
   document.getElementById('section-conditions').style.display = 'none';
   document.getElementById('section-narrative').style.display = 'none';
 
+  // Re-enable ID input (may have been disabled by previous edit)
+  document.getElementById('f-id').disabled = false;
+}
+
+function openAddForm() {
+  state.form = blankFormState();
+  state.idLocked = false;
+  state.saving = false;
+  state.editingId = null;
+
+  resetFormUI();
+
   // Heading
   document.getElementById('form-heading').textContent = 'New POI';
   document.getElementById('form-subheading').textContent = 'Add a new point of interest to the catalog';
@@ -1489,6 +1524,195 @@ function openAddForm() {
   setActiveTab('form');
   updateFormStatus();
 }
+
+function openEditForm(poiId) {
+  const poi = state.pois.find(p => p.id === poiId);
+  if (!poi) {
+    toast('Could not find that POI. Refreshing list...', 'err');
+    loadPOIs();
+    return;
+  }
+
+  state.form = blankFormState();
+  state.idLocked = true;
+  state.saving = false;
+  state.editingId = poi.id;
+
+  // Populate form state from existing POI
+  state.form.type = poi.type;
+  state.form.id = poi.id || '';
+  state.form.name = poi.name || '';
+  state.form.region = poi.region || '';
+  state.form.geoDescription = poi.geoDescription || '';
+  state.form.notes = poi.notes || '';
+  if (Array.isArray(poi.topLatLon)) {
+    state.form.topLat = poi.topLatLon[0];
+    state.form.topLon = poi.topLatLon[1];
+  }
+  state.form.radiusMeters = poi.radiusMeters ?? '';
+
+  if (poi.type === 'winter-chute') {
+    if (Array.isArray(poi.bottomLatLon)) {
+      state.form.bottomLat = poi.bottomLatLon[0];
+      state.form.bottomLon = poi.bottomLatLon[1];
+    }
+    state.form.slopeMin_deg = poi.slopeMin_deg ?? '';
+    state.form.slopeMax_deg = poi.slopeMax_deg ?? '';
+    state.form.widthMin_m = poi.widthMin_m ?? '';
+    state.form.widthMax_m = poi.widthMax_m ?? '';
+    state.form.topElev_m = poi.topElev_m ?? '';
+    state.form.bottomElev_m = poi.bottomElev_m ?? '';
+    state.form.stormDirPreference = poi.stormDirPreference || '';
+    state.form.vegetation = poi.vegetation || '';
+    state.form.cornice = !!poi.cornice;
+    state.form.skiedThisSeason = !!poi.skiedThisSeason;
+    state.form.patrolControlled = !!poi.patrolControlled;
+    state.form.bookmarked = !!poi.bookmarked;
+    state.form.experimental = !!poi.experimental;
+    state.form.closesEarly = !!poi.closesEarly;
+    state.form.needsRoping = !!poi.needsRoping;
+  } else if (poi.type === 'narrative-poi') {
+    state.form.audioUrl = poi.audioUrl || '';
+    state.form.narrativeText = poi.narrativeText || '';
+    state.form.season = poi.season || 'any';
+    state.form.narrativeAudioAutoPlay = poi.narrativeAudioAutoPlay !== false;
+  }
+
+  // Reset UI first, then populate
+  resetFormUI();
+
+  // Populate text/number inputs
+  document.getElementById('f-name').value = state.form.name;
+  document.getElementById('f-id').value = state.form.id;
+  document.getElementById('f-id').disabled = true;
+  document.getElementById('f-region').value = state.form.region;
+  document.getElementById('f-geoDesc').value = state.form.geoDescription;
+  document.getElementById('f-notes').value = state.form.notes;
+  document.getElementById('f-topLat').value = state.form.topLat;
+  document.getElementById('f-topLon').value = state.form.topLon;
+  document.getElementById('f-radius').value = state.form.radiusMeters;
+
+  if (poi.type === 'winter-chute') {
+    document.getElementById('f-bottomLat').value = state.form.bottomLat;
+    document.getElementById('f-bottomLon').value = state.form.bottomLon;
+    document.getElementById('f-slopeMin').value = state.form.slopeMin_deg;
+    document.getElementById('f-slopeMax').value = state.form.slopeMax_deg;
+    document.getElementById('f-widthMin').value = state.form.widthMin_m;
+    document.getElementById('f-widthMax').value = state.form.widthMax_m;
+    document.getElementById('f-topElev').value = state.form.topElev_m;
+    document.getElementById('f-bottomElev').value = state.form.bottomElev_m;
+    document.getElementById('f-vegetation').value = state.form.vegetation;
+  } else if (poi.type === 'narrative-poi') {
+    document.getElementById('f-audioUrl').value = state.form.audioUrl;
+    document.getElementById('f-narrativeText').value = state.form.narrativeText;
+    document.getElementById('f-season').value = state.form.season;
+  }
+
+  // Activate type card and reveal type-specific sections
+  document.querySelectorAll('.type-option').forEach(el => {
+    el.classList.toggle('selected', el.dataset.type === poi.type);
+  });
+  document.getElementById('section-geometry').style.display   = poi.type === 'winter-chute' ? '' : 'none';
+  document.getElementById('section-conditions').style.display = poi.type === 'winter-chute' ? '' : 'none';
+  document.getElementById('section-narrative').style.display  = poi.type === 'narrative-poi' ? '' : 'none';
+
+  // Activate compass button
+  document.querySelectorAll('.compass-btn').forEach(b => {
+    b.classList.toggle('selected', b.dataset.dir === state.form.stormDirPreference);
+  });
+
+  // Activate flag toggles
+  FLAG_DEFS.forEach(f => {
+    const toggle = document.querySelector(`.flag-toggle[data-flag="${f.key}"]`);
+    if (toggle) toggle.classList.toggle('on', !!state.form[f.key]);
+  });
+  // Narrative autoplay toggle (separate)
+  const autoplayToggle = document.getElementById('f-autoplay');
+  if (autoplayToggle) autoplayToggle.classList.toggle('on', !!state.form.narrativeAudioAutoPlay);
+
+  // Heading
+  document.getElementById('form-heading').textContent = `Edit ${poi.name || poi.id}`;
+  document.getElementById('form-subheading').textContent = `Editing existing POI (id: ${poi.id})`;
+  document.getElementById('form-breadcrumb-current').textContent = `Edit ${poi.name || poi.id}`;
+
+  setActiveTab('form');
+  updateFormStatus();
+}
+
+// ─── Delete flow ──────────────────────────────────────────
+
+let pendingDeleteId = null;
+
+function openDeleteModal(poiId) {
+  const poi = state.pois.find(p => p.id === poiId);
+  if (!poi) {
+    toast('Could not find that POI. Refreshing list...', 'err');
+    loadPOIs();
+    return;
+  }
+  pendingDeleteId = poi.id;
+  document.getElementById('delete-modal-text').textContent =
+    `Delete "${poi.name}" from the catalog? This cannot be undone.`;
+  document.getElementById('delete-confirm-hint').textContent =
+    `Type "${poi.name}" exactly to confirm.`;
+  const $input = document.getElementById('delete-confirm-input');
+  $input.value = '';
+  $input.placeholder = poi.name;
+  document.getElementById('delete-confirm-btn').disabled = true;
+  document.getElementById('delete-modal').classList.add('show');
+  setTimeout(() => $input.focus(), 50);
+}
+
+document.getElementById('delete-confirm-input').addEventListener('input', (e) => {
+  const poi = state.pois.find(p => p.id === pendingDeleteId);
+  if (!poi) return;
+  const match = e.target.value === poi.name;
+  document.getElementById('delete-confirm-btn').disabled = !match;
+});
+
+document.getElementById('delete-cancel-btn').addEventListener('click', () => {
+  pendingDeleteId = null;
+  document.getElementById('delete-modal').classList.remove('show');
+});
+
+document.getElementById('delete-confirm-btn').addEventListener('click', async () => {
+  if (!pendingDeleteId) return;
+  const id = pendingDeleteId;
+  const poi = state.pois.find(p => p.id === id);
+  const name = poi ? poi.name : id;
+
+  const $btn = document.getElementById('delete-confirm-btn');
+  $btn.disabled = true;
+  $btn.textContent = 'Deleting...';
+
+  const token = getStoredToken();
+  try {
+    const resp = await fetch(`${API_BASE}/pois?id=${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    if (resp.status === 401) {
+      toast('Session expired. Please sign in again.', 'err');
+      logout();
+      return;
+    }
+    if (!resp.ok) {
+      const data = await resp.json().catch(() => ({}));
+      throw new Error(data.error || `HTTP ${resp.status}`);
+    }
+    // Success
+    state.pois = state.pois.filter(p => p.id !== id);
+    renderPOIList();
+    pendingDeleteId = null;
+    document.getElementById('delete-modal').classList.remove('show');
+    toast(`"${name}" deleted`, 'ok');
+  } catch (err) {
+    toast('Delete failed: ' + err.message, 'err');
+    $btn.disabled = false;
+  } finally {
+    $btn.textContent = 'Delete';
+  }
+});
 
 // Build the compass picker once
 (function buildCompass() {
@@ -1592,18 +1816,26 @@ document.getElementById('f-season').addEventListener('change', (e) => {
 $addBtn.addEventListener('click', openAddForm);
 
 // Form back / cancel
-document.getElementById('form-back-link').addEventListener('click', () => setActiveTab('pois'));
+document.getElementById('form-back-link').addEventListener('click', () => {
+  state.editingId = null;
+  setActiveTab('pois');
+});
 document.getElementById('form-cancel-btn').addEventListener('click', () => {
-  if (!state.form) return setActiveTab('pois');
-  // If form has any data, confirm before discarding
+  if (!state.form) { state.editingId = null; return setActiveTab('pois'); }
+  const isEdit = !!state.editingId;
+  const confirmMsg = isEdit
+    ? 'Discard your edits? Any unsaved changes will be lost.'
+    : 'Discard this POI? Any entered data will be lost.';
   const hasData = state.form.name || state.form.id || state.form.topLat;
-  if (hasData && !confirm('Discard this POI? Any entered data will be lost.')) return;
+  if ((isEdit || hasData) && !confirm(confirmMsg)) return;
+  state.editingId = null;
   setActiveTab('pois');
 });
 
 // Save modal handlers
 $saveCloseBtn.addEventListener('click', () => {
   $saveModal.classList.remove('show');
+  state.editingId = null;
   setActiveTab('pois');
 });
 $saveAnotherBtn.addEventListener('click', () => {
@@ -1789,10 +2021,25 @@ document.getElementById('form-save-btn').addEventListener('click', async () => {
 
     // Success
     state.saving = false;
-    state.pois.push(data.saved || poi);
-    $saveModalText.textContent = `"${poi.name}" has been saved to the catalog.`;
+    const isEdit = !!state.editingId;
+    const savedPOI = data.saved || poi;
+
+    if (isEdit) {
+      // Replace existing in local state
+      const idx = state.pois.findIndex(p => p.id === state.editingId);
+      if (idx >= 0) state.pois[idx] = savedPOI;
+      else state.pois.push(savedPOI);
+    } else {
+      state.pois.push(savedPOI);
+    }
+
+    document.getElementById('save-modal-title').textContent = isEdit ? 'POI Updated' : 'POI Saved';
+    $saveAnotherBtn.style.display = isEdit ? 'none' : '';
+    $saveModalText.textContent = isEdit
+      ? `"${poi.name}" has been updated.`
+      : `"${poi.name}" has been saved to the catalog.`;
     $saveModal.classList.add('show');
-    toast('POI saved', 'ok');
+    toast(isEdit ? 'POI updated' : 'POI saved', 'ok');
   } catch (err) {
     state.saving = false;
     document.getElementById('form-save-btn').disabled = false;

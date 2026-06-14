@@ -36,7 +36,7 @@ html, body {
 button { font-family: inherit; cursor: pointer; border: none; }
 input, textarea, select { font-family: inherit; }
 
-/* ─── Loading screen ─── */
+/* ─── Loading ─── */
 
 #loading {
   position: fixed; inset: 0;
@@ -53,7 +53,7 @@ input, textarea, select { font-family: inherit; }
   color: var(--muted);
 }
 
-/* ─── Login screen ─── */
+/* ─── Login ─── */
 
 #login {
   display: none;
@@ -63,22 +63,14 @@ input, textarea, select { font-family: inherit; }
   padding: 24px;
 }
 #login.active { display: flex; }
-
 .login-card {
-  width: 100%;
-  max-width: 380px;
+  width: 100%; max-width: 380px;
   background: var(--card);
   border: 1px solid var(--rim);
   border-radius: 12px;
   padding: 32px 28px;
 }
-
-.login-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
-}
+.login-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
 .login-logo-icon {
   width: 44px; height: 44px;
   background: linear-gradient(135deg, var(--coral), var(--coral-2));
@@ -95,30 +87,25 @@ input, textarea, select { font-family: inherit; }
 .login-logo-text .chase { color: #fff; }
 .login-logo-text .life {
   background: linear-gradient(90deg, var(--coral), var(--coral-2));
-  -webkit-background-clip: text;
-  background-clip: text;
+  -webkit-background-clip: text; background-clip: text;
   color: transparent;
 }
 .login-tagline {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--muted);
+  font-size: 0.7rem; letter-spacing: 0.25em;
+  text-transform: uppercase; color: var(--muted);
   margin-top: 4px;
 }
-
 .login-heading {
   font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 600;
-  font-size: 1.1rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--snow);
-  margin-bottom: 20px;
+  font-weight: 600; font-size: 1.1rem;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--snow); margin-bottom: 20px;
 }
 
-.field { margin-bottom: 16px; }
+/* ─── Common form / field styles ─── */
+
+.field { margin-bottom: 14px; }
 .field label {
   display: block;
   font-family: 'Barlow Condensed', sans-serif;
@@ -128,44 +115,55 @@ input, textarea, select { font-family: inherit; }
   color: var(--muted);
   margin-bottom: 6px;
 }
-.field input {
+.field label .req { color: var(--coral); margin-left: 3px; }
+.field input, .field textarea, .field select {
   width: 100%;
   background: var(--panel);
   border: 1px solid var(--rim);
   border-radius: 8px;
-  padding: 12px 14px;
+  padding: 11px 14px;
   color: var(--snow);
   font-size: 0.95rem;
   outline: none;
   transition: border-color 0.15s;
 }
-.field input:focus { border-color: var(--coral); }
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--coral); }
+.field input.invalid, .field textarea.invalid { border-color: var(--danger); }
+.field input::placeholder { color: var(--muted); opacity: 0.6; }
+.field textarea { resize: vertical; min-height: 60px; font-family: 'Barlow', sans-serif; }
+.field .hint {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+.field .hint.ok { color: var(--green); }
+.field .hint.err { color: var(--danger); }
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field-row > .field { margin-bottom: 14px; }
+
+/* ─── Buttons ─── */
 
 .btn {
   background: linear-gradient(135deg, var(--coral), var(--coral-2));
   color: #fff;
   font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 700;
-  font-size: 0.9rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
+  font-weight: 700; font-size: 0.9rem;
+  letter-spacing: 0.15em; text-transform: uppercase;
   padding: 12px 20px;
   border-radius: 8px;
   transition: transform 0.05s, opacity 0.15s;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  display: inline-flex; align-items: center; gap: 8px;
 }
 .btn.block { width: 100%; padding: 14px; font-size: 0.95rem; }
 .btn:hover { opacity: 0.92; }
 .btn:active { transform: scale(0.98); }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn.ghost {
-  background: transparent;
-  border: 1px solid var(--rim);
-  color: var(--text);
-}
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn.ghost { background: transparent; border: 1px solid var(--rim); color: var(--text); }
 .btn.ghost:hover { border-color: var(--coral); color: var(--coral); opacity: 1; }
+.btn.ghost:disabled { color: var(--muted); }
+.btn.ghost:disabled:hover { border-color: var(--rim); color: var(--muted); }
 
 .error-msg {
   display: none;
@@ -197,9 +195,7 @@ input, textarea, select { font-family: inherit; }
 #dashboard.active { display: flex; }
 
 .topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between;
   padding: 14px 20px;
   background: var(--panel);
   border-bottom: 1px solid var(--rim);
@@ -212,18 +208,11 @@ input, textarea, select { font-family: inherit; }
   display: grid; place-items: center;
 }
 .topbar-icon svg { width: 19px; height: 19px; fill: #fff; }
-.topbar-title {
-  font-family: 'Black Han Sans', sans-serif;
-  font-size: 1.05rem;
-  color: #fff;
-  line-height: 1;
-}
+.topbar-title { font-family: 'Black Han Sans', sans-serif; font-size: 1.05rem; color: #fff; line-height: 1; }
 .topbar-sub {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted);
+  font-size: 0.65rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--muted);
   margin-top: 2px;
 }
 
@@ -232,8 +221,7 @@ input, textarea, select { font-family: inherit; }
   border: 1px solid var(--rim);
   color: var(--text);
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.18em;
+  font-size: 0.7rem; letter-spacing: 0.18em;
   text-transform: uppercase;
   padding: 8px 14px;
   border-radius: 6px;
@@ -241,7 +229,7 @@ input, textarea, select { font-family: inherit; }
 }
 .logout-btn:hover { border-color: var(--coral); color: var(--coral); }
 
-/* ─── Tab strip ─── */
+/* ─── Tabs ─── */
 
 .tabs {
   display: flex;
@@ -251,12 +239,10 @@ input, textarea, select { font-family: inherit; }
   gap: 4px;
 }
 .tab {
-  background: transparent;
-  border: none;
+  background: transparent; border: none;
   color: var(--muted);
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.85rem;
-  letter-spacing: 0.15em;
+  font-size: 0.85rem; letter-spacing: 0.15em;
   text-transform: uppercase;
   padding: 14px 18px;
   border-bottom: 2px solid transparent;
@@ -264,12 +250,9 @@ input, textarea, select { font-family: inherit; }
   margin-bottom: -1px;
 }
 .tab:hover { color: var(--text); }
-.tab.active {
-  color: var(--snow);
-  border-bottom-color: var(--coral);
-}
+.tab.active { color: var(--snow); border-bottom-color: var(--coral); }
 
-/* ─── Main content area ─── */
+/* ─── Main ─── */
 
 .main {
   flex: 1;
@@ -285,36 +268,42 @@ input, textarea, select { font-family: inherit; }
 .view.active { display: block; }
 
 .view-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
   margin-bottom: 20px;
 }
 .view-header-left { flex: 1; min-width: 200px; }
 
 .page-heading {
   font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 700;
-  font-size: 1.4rem;
-  letter-spacing: 0.05em;
+  font-weight: 700; font-size: 1.4rem;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--snow); margin-bottom: 4px;
+}
+.page-subheading { font-size: 0.85rem; color: var(--muted); }
+
+.view-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ─── Breadcrumb (used on form view) ─── */
+
+.breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.75rem; letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--snow);
-  margin-bottom: 4px;
-}
-.page-subheading {
-  font-size: 0.85rem;
   color: var(--muted);
+  margin-bottom: 10px;
 }
-
-.view-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+.breadcrumb a {
+  color: var(--muted);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s;
 }
+.breadcrumb a:hover { color: var(--coral); }
+.breadcrumb .sep { color: var(--rim-hi); }
 
-/* ─── Dashboard status card ─── */
+/* ─── Dashboard status ─── */
 
 .status-card {
   background: var(--card);
@@ -324,9 +313,7 @@ input, textarea, select { font-family: inherit; }
   margin-bottom: 16px;
 }
 .status-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between;
   padding: 10px 0;
   border-bottom: 1px solid var(--rim);
   font-size: 0.9rem;
@@ -334,15 +321,10 @@ input, textarea, select { font-family: inherit; }
 .status-row:last-child { border-bottom: none; }
 .status-label {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
+  font-size: 0.8rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted);
 }
-.status-value {
-  color: var(--snow);
-  font-variant-numeric: tabular-nums;
-}
+.status-value { color: var(--snow); font-variant-numeric: tabular-nums; }
 .status-value.ok { color: var(--green); }
 .status-value.err { color: var(--danger); }
 
@@ -361,76 +343,52 @@ input, textarea, select { font-family: inherit; }
 /* ─── POI list filter bar ─── */
 
 .filter-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
   margin-bottom: 16px;
   padding: 12px 16px;
   background: var(--card);
   border: 1px solid var(--rim);
   border-radius: 10px;
 }
-.filter-pills {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
+.filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
 .pill {
   background: transparent;
   border: 1px solid var(--rim);
   color: var(--muted);
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
+  font-size: 0.75rem; letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 6px 12px;
   border-radius: 999px;
   transition: all 0.15s;
 }
 .pill:hover { border-color: var(--rim-hi); color: var(--text); }
-.pill.active {
-  background: var(--coral);
-  border-color: var(--coral);
-  color: #fff;
-}
+.pill.active { background: var(--coral); border-color: var(--coral); color: #fff; }
 .pill .count {
   background: rgba(255,255,255,0.18);
   border-radius: 999px;
   padding: 1px 7px;
   margin-left: 6px;
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-size: 0.7rem; font-weight: 700;
 }
-.pill:not(.active) .count {
-  background: var(--rim);
-  color: var(--muted);
-}
-
+.pill:not(.active) .count { background: var(--rim); color: var(--muted); }
 .sort-select {
   background: var(--panel);
   border: 1px solid var(--rim);
   color: var(--text);
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.78rem;
-  letter-spacing: 0.1em;
+  font-size: 0.78rem; letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 7px 14px 7px 12px;
   border-radius: 999px;
-  cursor: pointer;
-  outline: none;
+  cursor: pointer; outline: none;
 }
 .sort-select:focus { border-color: var(--coral); }
 
 /* ─── POI cards ─── */
 
-.poi-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
+.poi-list { display: flex; flex-direction: column; gap: 12px; }
 .poi-card {
   background: var(--card);
   border: 1px solid var(--rim);
@@ -438,64 +396,33 @@ input, textarea, select { font-family: inherit; }
   padding: 16px 18px;
   transition: border-color 0.15s, background 0.15s;
 }
-.poi-card:hover {
-  border-color: var(--rim-hi);
-  background: var(--card-2);
-}
-
+.poi-card:hover { border-color: var(--rim-hi); background: var(--card-2); }
 .poi-card-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  display: flex; align-items: flex-start; justify-content: space-between;
   gap: 12px;
   margin-bottom: 10px;
 }
-.poi-name-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
+.poi-name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .poi-name {
   font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 700;
-  font-size: 1.15rem;
-  color: var(--snow);
-  letter-spacing: 0.02em;
+  font-weight: 700; font-size: 1.15rem;
+  color: var(--snow); letter-spacing: 0.02em;
 }
 
 .type-badge {
-  display: inline-flex;
-  align-items: center;
+  display: inline-flex; align-items: center;
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.65rem;
-  letter-spacing: 0.18em;
+  font-size: 0.65rem; letter-spacing: 0.18em;
   text-transform: uppercase;
   padding: 3px 9px;
   border-radius: 4px;
   font-weight: 600;
 }
-.type-winter-chute {
-  background: rgba(255, 124, 50, 0.15);
-  color: var(--coral);
-  border: 1px solid rgba(255, 124, 50, 0.4);
-}
-.type-narrative-poi {
-  background: rgba(125, 212, 248, 0.1);
-  color: var(--ice);
-  border: 1px solid rgba(125, 212, 248, 0.35);
-}
-.type-general {
-  background: rgba(200, 220, 232, 0.06);
-  color: var(--text);
-  border: 1px solid var(--rim);
-}
+.type-winter-chute { background: rgba(255, 124, 50, 0.15); color: var(--coral); border: 1px solid rgba(255, 124, 50, 0.4); }
+.type-narrative-poi { background: rgba(125, 212, 248, 0.1); color: var(--ice); border: 1px solid rgba(125, 212, 248, 0.35); }
+.type-general { background: rgba(200, 220, 232, 0.06); color: var(--text); border: 1px solid var(--rim); }
 
-.poi-actions {
-  display: flex;
-  gap: 6px;
-  flex-shrink: 0;
-}
+.poi-actions { display: flex; gap: 6px; flex-shrink: 0; }
 .icon-btn {
   background: transparent;
   border: 1px solid var(--rim);
@@ -503,12 +430,13 @@ input, textarea, select { font-family: inherit; }
   padding: 6px 10px;
   border-radius: 6px;
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
+  font-size: 0.7rem; letter-spacing: 0.1em;
   text-transform: uppercase;
   transition: all 0.15s;
 }
 .icon-btn:hover { border-color: var(--coral); color: var(--coral); }
+.icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.icon-btn:disabled:hover { border-color: var(--rim); color: var(--muted); }
 
 .poi-meta {
   display: grid;
@@ -516,48 +444,25 @@ input, textarea, select { font-family: inherit; }
   gap: 10px 16px;
   font-size: 0.82rem;
 }
-.poi-meta-item {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
+.poi-meta-item { display: flex; flex-direction: column; gap: 2px; }
 .poi-meta-label {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.65rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--muted);
+  font-size: 0.65rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--muted);
 }
-.poi-meta-value {
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-}
+.poi-meta-value { color: var(--text); font-variant-numeric: tabular-nums; }
 
-.poi-flags {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
+.poi-flags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
 .flag {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.62rem;
-  letter-spacing: 0.15em;
+  font-size: 0.62rem; letter-spacing: 0.15em;
   text-transform: uppercase;
   padding: 2px 7px;
   border-radius: 3px;
   font-weight: 600;
 }
-.flag-warn {
-  background: rgba(255, 195, 77, 0.12);
-  color: var(--amber);
-  border: 1px solid rgba(255, 195, 77, 0.3);
-}
-.flag-info {
-  background: rgba(125, 212, 248, 0.08);
-  color: var(--ice);
-  border: 1px solid rgba(125, 212, 248, 0.25);
-}
+.flag-warn { background: rgba(255, 195, 77, 0.12); color: var(--amber); border: 1px solid rgba(255, 195, 77, 0.3); }
+.flag-info { background: rgba(125, 212, 248, 0.08); color: var(--ice); border: 1px solid rgba(125, 212, 248, 0.25); }
 
 /* ─── Empty state ─── */
 
@@ -578,32 +483,211 @@ input, textarea, select { font-family: inherit; }
 }
 .empty-state-title {
   font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 600;
-  font-size: 1.1rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--snow);
-  margin-bottom: 6px;
+  font-weight: 600; font-size: 1.1rem;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--snow); margin-bottom: 6px;
 }
 .empty-state-text {
-  font-size: 0.88rem;
-  color: var(--muted);
+  font-size: 0.88rem; color: var(--muted);
   margin-bottom: 16px;
-  max-width: 360px;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 360px; margin-left: auto; margin-right: auto;
   line-height: 1.5;
 }
 
-/* ─── Toast notifications ─── */
+/* ─── Form sections ─── */
+
+.form-section {
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+.form-section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 0.85rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--coral);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rim);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.form-section-title .badge {
+  font-size: 0.6rem; color: var(--muted); letter-spacing: 0.15em;
+  background: var(--panel);
+  padding: 3px 8px; border-radius: 4px;
+}
+
+/* ─── Type selector ─── */
+
+.type-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+}
+.type-option {
+  background: var(--panel);
+  border: 1px solid var(--rim);
+  border-radius: 8px;
+  padding: 14px 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+.type-option:hover { border-color: var(--rim-hi); }
+.type-option.selected {
+  border-color: var(--coral);
+  background: rgba(255, 124, 50, 0.08);
+}
+.type-option-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  color: var(--snow);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.type-option-desc {
+  font-size: 0.78rem; color: var(--muted);
+  line-height: 1.4;
+}
+
+/* ─── Compass picker for stormDirPreference ─── */
+
+.compass-picker {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+}
+.compass-btn {
+  background: var(--panel);
+  border: 1px solid var(--rim);
+  color: var(--muted);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem; letter-spacing: 0.05em;
+  font-weight: 600;
+  padding: 8px 4px;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.compass-btn:hover { border-color: var(--rim-hi); color: var(--text); }
+.compass-btn.selected {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: #fff;
+}
+
+/* ─── Flags grid ─── */
+
+.flags-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 8px;
+}
+.flag-toggle {
+  background: var(--panel);
+  border: 1px solid var(--rim);
+  border-radius: 6px;
+  padding: 9px 12px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 9px;
+  font-size: 0.85rem;
+  transition: border-color 0.15s;
+}
+.flag-toggle:hover { border-color: var(--rim-hi); }
+.flag-toggle.on { border-color: var(--coral); background: rgba(255, 124, 50, 0.06); }
+.flag-toggle .box {
+  width: 16px; height: 16px;
+  border: 1.5px solid var(--rim-hi);
+  border-radius: 3px;
+  flex-shrink: 0;
+  display: grid; place-items: center;
+  transition: all 0.15s;
+}
+.flag-toggle.on .box {
+  border-color: var(--coral);
+  background: var(--coral);
+}
+.flag-toggle.on .box::after {
+  content: ''; width: 4px; height: 8px;
+  border-right: 2px solid #fff; border-bottom: 2px solid #fff;
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+.flag-toggle .label { color: var(--text); }
+.flag-toggle.on .label { color: var(--snow); }
+
+/* ─── Form footer ─── */
+
+.form-footer {
+  display: flex; justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 10px;
+  padding: 14px 18px;
+  position: sticky;
+  bottom: 12px;
+  z-index: 5;
+}
+.form-footer-status {
+  font-size: 0.82rem;
+  color: var(--muted);
+  flex: 1; min-width: 180px;
+}
+.form-footer-status.ready { color: var(--green); }
+.form-footer-status.err   { color: var(--danger); }
+.form-footer-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.validation-errors {
+  background: rgba(255, 58, 92, 0.06);
+  border: 1px solid rgba(255, 58, 92, 0.3);
+  color: var(--danger);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 14px;
+}
+.validation-errors ul { margin: 6px 0 0 18px; }
+
+/* ─── Save success modal ─── */
+
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center; justify-content: center;
+  z-index: 150;
+  padding: 24px;
+}
+.modal-backdrop.show { display: flex; }
+.modal {
+  background: var(--card);
+  border: 1px solid var(--rim);
+  border-radius: 12px;
+  padding: 28px;
+  max-width: 420px;
+  width: 100%;
+}
+.modal h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 1.15rem;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--snow);
+  margin-bottom: 8px;
+}
+.modal p { color: var(--text); font-size: 0.9rem; line-height: 1.5; margin-bottom: 18px; }
+.modal .modal-buttons { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+
+/* ─── Toast ─── */
 
 #toast-container {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 20px; right: 20px;
   z-index: 200;
-  display: flex;
-  flex-direction: column;
+  display: flex; flex-direction: column;
   gap: 8px;
   pointer-events: none;
 }
@@ -625,25 +709,39 @@ input, textarea, select { font-family: inherit; }
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ─── Responsive ─── */
+
 @media (max-width: 600px) {
   .topbar { padding: 12px 16px; }
   .main { padding: 18px 14px; }
   .tabs { padding: 0 10px; }
   .tab { padding: 12px 12px; font-size: 0.8rem; }
+  .field-row { grid-template-columns: 1fr; }
+  .compass-picker { grid-template-columns: repeat(4, 1fr); }
 }
 </style>
 </head>
 <body>
 
-<!-- Loading splash -->
 <div id="loading">
   <div class="loading-text">Loading back office...</div>
 </div>
 
-<!-- Toast container -->
 <div id="toast-container"></div>
 
-<!-- Login screen -->
+<!-- Save success modal -->
+<div class="modal-backdrop" id="save-modal">
+  <div class="modal">
+    <h3>POI Saved</h3>
+    <p id="save-modal-text">Your POI has been saved to the catalog.</p>
+    <div class="modal-buttons">
+      <button class="btn ghost" id="save-close-btn">Back to list</button>
+      <button class="btn" id="save-another-btn">Add another</button>
+    </div>
+  </div>
+</div>
+
+<!-- Login -->
 <section id="login">
   <div class="login-card">
     <div class="login-logo">
@@ -655,17 +753,13 @@ input, textarea, select { font-family: inherit; }
         <div class="login-tagline">Back Office</div>
       </div>
     </div>
-
     <div class="login-heading">Sign in</div>
     <div id="login-error" class="error-msg"></div>
-
     <div class="field">
       <label for="token-input">Admin token</label>
       <input type="password" id="token-input" placeholder="Enter your admin token" autocomplete="off" autofocus>
     </div>
-
     <button id="login-btn" class="btn block">Sign in</button>
-
     <div class="login-hint">
       Your token is the secret you set in Cloudflare.<br>
       It's stored locally until you close the browser.
@@ -703,34 +797,20 @@ input, textarea, select { font-family: inherit; }
           <div class="page-subheading">System status &amp; quick overview</div>
         </div>
       </div>
-
       <div class="status-card">
-        <div class="status-row">
-          <span class="status-label">API endpoint</span>
-          <span id="status-api" class="status-value">checking...</span>
-        </div>
-        <div class="status-row">
-          <span class="status-label">POI catalog</span>
-          <span id="status-catalog" class="status-value">checking...</span>
-        </div>
-        <div class="status-row">
-          <span class="status-label">Admin auth</span>
-          <span id="status-auth" class="status-value">checking...</span>
-        </div>
-        <div class="status-row">
-          <span class="status-label">Schema version</span>
-          <span id="status-schema" class="status-value">—</span>
-        </div>
+        <div class="status-row"><span class="status-label">API endpoint</span><span id="status-api" class="status-value">checking...</span></div>
+        <div class="status-row"><span class="status-label">POI catalog</span><span id="status-catalog" class="status-value">checking...</span></div>
+        <div class="status-row"><span class="status-label">Admin auth</span><span id="status-auth" class="status-value">checking...</span></div>
+        <div class="status-row"><span class="status-label">Schema version</span><span id="status-schema" class="status-value">—</span></div>
       </div>
-
       <div class="placeholder-note">
-        <strong>Steps 8 + 9 complete.</strong> Scaffolding is live and the POI
-        list view is wired up. Switch to the POIs tab to see what's in the catalog.
-        Step 10 will add the "New POI" form.
+        <strong>Steps 8 + 9 + 10 complete.</strong> The back office is now functional —
+        you can add POIs from the POIs tab. Step 11 will add edit/delete; Step 12 will
+        add image upload from the form.
       </div>
     </div>
 
-    <!-- POIs view -->
+    <!-- POIs list view -->
     <div class="view" id="view-pois">
       <div class="view-header">
         <div class="view-header-left">
@@ -739,10 +819,9 @@ input, textarea, select { font-family: inherit; }
         </div>
         <div class="view-actions">
           <button id="refresh-btn" class="btn ghost">Refresh</button>
-          <button id="add-btn" class="btn" disabled title="Step 10 will enable this">+ Add POI</button>
+          <button id="add-btn" class="btn">+ Add POI</button>
         </div>
       </div>
-
       <div class="filter-bar">
         <div class="filter-pills" id="filter-pills">
           <button class="pill active" data-filter="all">All <span class="count" id="count-all">0</span></button>
@@ -757,9 +836,208 @@ input, textarea, select { font-family: inherit; }
           <option value="name-desc">Name Z → A</option>
         </select>
       </div>
+      <div id="poi-list-container"></div>
+    </div>
 
-      <div id="poi-list-container">
-        <!-- POI cards or empty state injected here -->
+    <!-- POI add/edit form view -->
+    <div class="view" id="view-form">
+      <div class="breadcrumb">
+        <a id="form-back-link">POIs</a>
+        <span class="sep">›</span>
+        <span id="form-breadcrumb-current">New POI</span>
+      </div>
+      <div class="view-header">
+        <div class="view-header-left">
+          <div class="page-heading" id="form-heading">New POI</div>
+          <div class="page-subheading" id="form-subheading">Add a new point of interest to the catalog</div>
+        </div>
+      </div>
+
+      <div id="form-error-block" class="validation-errors" style="display:none;">
+        <strong>Validation errors:</strong>
+        <ul id="form-error-list"></ul>
+      </div>
+
+      <!-- Section: Type -->
+      <div class="form-section">
+        <div class="form-section-title">Type</div>
+        <div class="type-selector" id="type-selector">
+          <button type="button" class="type-option" data-type="winter-chute">
+            <div class="type-option-name">Winter Chute</div>
+            <div class="type-option-desc">A skiable line. Full reveal + chime when entered.</div>
+          </button>
+          <button type="button" class="type-option" data-type="narrative-poi">
+            <div class="type-option-name">Narrative POI</div>
+            <div class="type-option-desc">Plays audio narration when GPS enters the zone.</div>
+          </button>
+          <button type="button" class="type-option" data-type="general">
+            <div class="type-option-name">General</div>
+            <div class="type-option-desc">A named place with basic info. No special behavior.</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Section: Identity (all types) -->
+      <div class="form-section" id="section-identity">
+        <div class="form-section-title">Identity</div>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-name">Name <span class="req">*</span></label>
+            <input type="text" id="f-name" placeholder="e.g. Tunnel Vision">
+            <div class="hint" id="hint-name">A short, recognizable name.</div>
+          </div>
+          <div class="field">
+            <label for="f-id">ID <span class="req">*</span></label>
+            <input type="text" id="f-id" placeholder="auto-generated from name">
+            <div class="hint" id="hint-id">Lowercase, hyphens. Auto-fills from name.</div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-region">Region</label>
+            <input type="text" id="f-region" placeholder="e.g. Whitewall, T1, CPR Ridge">
+            <div class="hint">Skier-recognizable area within KH.</div>
+          </div>
+          <div class="field">
+            <label for="f-geoDesc">Geographic description</label>
+            <input type="text" id="f-geoDesc" placeholder="e.g. skier's right of CPR Ridge">
+            <div class="hint">Where this POI sits in the terrain.</div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-notes">Notes</label>
+          <textarea id="f-notes" placeholder="Internal notes — visible in the back office only."></textarea>
+        </div>
+      </div>
+
+      <!-- Section: Location (all types) -->
+      <div class="form-section" id="section-location">
+        <div class="form-section-title">Location</div>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-topLat">Top latitude <span class="req">*</span></label>
+            <input type="number" id="f-topLat" step="0.0001" placeholder="50.8800">
+            <div class="hint" id="hint-topLat">KH range: 50.84 – 50.92</div>
+          </div>
+          <div class="field">
+            <label for="f-topLon">Top longitude <span class="req">*</span></label>
+            <input type="number" id="f-topLon" step="0.0001" placeholder="-116.9100">
+            <div class="hint" id="hint-topLon">KH range: -116.94 – -116.85</div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-radius">Trigger radius (meters) <span class="req">*</span></label>
+          <input type="number" id="f-radius" step="1" placeholder="25">
+          <div class="hint" id="hint-radius">5 – 100. The GPS-distance from the top that triggers the POI.</div>
+        </div>
+      </div>
+
+      <!-- Section: Geometry (winter-chute only) -->
+      <div class="form-section" id="section-geometry" style="display:none;">
+        <div class="form-section-title">Chute geometry <span class="badge">winter-chute only</span></div>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-bottomLat">Bottom latitude <span class="req">*</span></label>
+            <input type="number" id="f-bottomLat" step="0.0001" placeholder="50.8750">
+            <div class="hint">Used to compute the chute's axis bearing.</div>
+          </div>
+          <div class="field">
+            <label for="f-bottomLon">Bottom longitude <span class="req">*</span></label>
+            <input type="number" id="f-bottomLon" step="0.0001" placeholder="-116.9100">
+            <div class="hint" id="hint-bearing">&nbsp;</div>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-slopeMin">Slope min (°) <span class="req">*</span></label>
+            <input type="number" id="f-slopeMin" step="1" placeholder="38">
+          </div>
+          <div class="field">
+            <label for="f-slopeMax">Slope max (°) <span class="req">*</span></label>
+            <input type="number" id="f-slopeMax" step="1" placeholder="45">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-widthMin">Width min (m) <span class="req">*</span></label>
+            <input type="number" id="f-widthMin" step="0.5" placeholder="3">
+          </div>
+          <div class="field">
+            <label for="f-widthMax">Width max (m) <span class="req">*</span></label>
+            <input type="number" id="f-widthMax" step="0.5" placeholder="8">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-topElev">Top elevation (m) <span class="req">*</span></label>
+            <input type="number" id="f-topElev" step="1" placeholder="2380">
+          </div>
+          <div class="field">
+            <label for="f-bottomElev">Bottom elevation (m) <span class="req">*</span></label>
+            <input type="number" id="f-bottomElev" step="1" placeholder="2120">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Conditions (winter-chute only) -->
+      <div class="form-section" id="section-conditions" style="display:none;">
+        <div class="form-section-title">Conditions &amp; flags <span class="badge">winter-chute only</span></div>
+        <div class="field">
+          <label>Storm direction preference <span class="req">*</span></label>
+          <div class="compass-picker" id="compass-picker">
+            <!-- compass buttons injected by JS -->
+          </div>
+          <div class="hint">Wind FROM this direction loads the chute with snow.</div>
+        </div>
+        <div class="field">
+          <label for="f-vegetation">Vegetation</label>
+          <input type="text" id="f-vegetation" placeholder="e.g. light alpine, mixed conifer">
+        </div>
+        <div class="field">
+          <label>Flags</label>
+          <div class="flags-grid" id="flags-grid">
+            <!-- flag toggles injected by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Narrative (narrative-poi only) -->
+      <div class="form-section" id="section-narrative" style="display:none;">
+        <div class="form-section-title">Narrative <span class="badge">narrative-poi only</span></div>
+        <div class="field">
+          <label for="f-audioUrl">Audio URL <span class="req">*</span></label>
+          <input type="text" id="f-audioUrl" placeholder="https://chase-life-media.r2.dev/audio/...">
+          <div class="hint">Required. Audio plays when skier enters this POI's zone.</div>
+        </div>
+        <div class="field">
+          <label for="f-narrativeText">Narrative text (optional)</label>
+          <textarea id="f-narrativeText" placeholder="Used as closed-caption alongside audio."></textarea>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-season">Season <span class="req">*</span></label>
+            <select id="f-season">
+              <option value="any">any</option>
+              <option value="winter">winter</option>
+              <option value="summer">summer</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Auto-play audio</label>
+            <div class="flag-toggle on" id="f-autoplay" data-flag="narrativeAudioAutoPlay">
+              <div class="box"></div><div class="label">Yes, auto-play on entry</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="form-footer">
+        <div class="form-footer-status" id="form-status">Pick a type to start.</div>
+        <div class="form-footer-buttons">
+          <button id="form-cancel-btn" class="btn ghost">Cancel</button>
+          <button id="form-save-btn" class="btn" disabled>Save</button>
+        </div>
       </div>
     </div>
 
@@ -773,19 +1051,42 @@ input, textarea, select { font-family: inherit; }
 
 const API_BASE = '/api';
 const STORAGE_KEY = 'cl_admin_token';
+
 const TYPE_LABELS = {
   'winter-chute':  'Winter Chute',
   'narrative-poi': 'Narrative',
   'general':       'General',
 };
 
+// Mirror server-side validator (POIValidator.js)
+const KH_BBOX = { latMin: 50.84, latMax: 50.92, lonMin: -116.94, lonMax: -116.85 };
+const COMPASS_16 = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+const VALID_TYPES = ['winter-chute','narrative-poi','general'];
+const VALID_SEASONS = ['summer','winter','any'];
+const RADIUS_MIN = 5;
+const RADIUS_MAX = 100;
+const ID_REGEX = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+const FLAG_DEFS = [
+  { key: 'cornice',          label: 'Cornice present' },
+  { key: 'skiedThisSeason',  label: 'Skied this season' },
+  { key: 'patrolControlled', label: 'Patrol-controlled' },
+  { key: 'bookmarked',       label: 'Bookmarked' },
+  { key: 'experimental',     label: 'Experimental' },
+  { key: 'closesEarly',      label: 'Closes early in day' },
+  { key: 'needsRoping',      label: 'Needs roping' },
+];
+
 // ─── State ────────────────────────────────────────────────
 
 const state = {
   pois: [],
-  filter: 'all',      // 'all' | 'winter-chute' | 'narrative-poi' | 'general'
-  sort:   'updated-desc',
+  filter: 'all',
+  sort: 'updated-desc',
   loadedAt: null,
+  form: null,        // current form state (null when not editing)
+  idLocked: false,   // true once user has manually edited the ID field
+  saving: false,
 };
 
 // ─── Element refs ─────────────────────────────────────────
@@ -808,6 +1109,10 @@ const $poiSubheading = document.getElementById('poi-subheading');
 const $sortSelect    = document.getElementById('sort-select');
 const $filterPills   = document.getElementById('filter-pills');
 const $toastContainer = document.getElementById('toast-container');
+const $saveModal     = document.getElementById('save-modal');
+const $saveModalText = document.getElementById('save-modal-text');
+const $saveCloseBtn  = document.getElementById('save-close-btn');
+const $saveAnotherBtn = document.getElementById('save-another-btn');
 
 // ─── Token storage ────────────────────────────────────────
 
@@ -815,8 +1120,7 @@ function getStoredToken() {
   try { return sessionStorage.getItem(STORAGE_KEY); } catch { return null; }
 }
 function storeToken(token) {
-  try { sessionStorage.setItem(STORAGE_KEY, token); }
-  catch (err) { console.error('Could not store token:', err); }
+  try { sessionStorage.setItem(STORAGE_KEY, token); } catch (err) { console.error(err); }
 }
 function clearStoredToken() {
   try { sessionStorage.removeItem(STORAGE_KEY); } catch {}
@@ -847,12 +1151,8 @@ function showLogin(errorMsg) {
   $loading.classList.add('hidden');
   $login.classList.add('active');
   $dashboard.classList.remove('active');
-  if (errorMsg) {
-    $loginErr.textContent = errorMsg;
-    $loginErr.classList.add('show');
-  } else {
-    $loginErr.classList.remove('show');
-  }
+  if (errorMsg) { $loginErr.textContent = errorMsg; $loginErr.classList.add('show'); }
+  else { $loginErr.classList.remove('show'); }
   setTimeout(() => $tokenIn.focus(), 50);
 }
 function showDashboard() {
@@ -864,13 +1164,15 @@ function showDashboard() {
   runStatusChecks();
 }
 
-// ─── Tab system ───────────────────────────────────────────
+// ─── Tabs ─────────────────────────────────────────────────
 
 function setActiveTab(name) {
-  const valid = ['dashboard', 'pois'];
+  const valid = ['dashboard', 'pois', 'form'];
   if (!valid.includes(name)) name = 'dashboard';
+  // Only highlight tab strip for dashboard/pois (form is a sub-view of pois)
   document.querySelectorAll('.tab').forEach(t => {
-    t.classList.toggle('active', t.dataset.tab === name);
+    const isActive = (name === 'form' && t.dataset.tab === 'pois') || t.dataset.tab === name;
+    t.classList.toggle('active', isActive);
   });
   document.querySelectorAll('.view').forEach(v => {
     v.classList.toggle('active', v.id === 'view-' + name);
@@ -889,7 +1191,7 @@ window.addEventListener('hashchange', () => {
   setActiveTab(tab);
 });
 
-// ─── Auth flow ────────────────────────────────────────────
+// ─── Auth ─────────────────────────────────────────────────
 
 async function validateToken(token) {
   if (!token || token.length < 4) throw new Error('Token is too short');
@@ -897,10 +1199,7 @@ async function validateToken(token) {
   try {
     resp = await fetch(`${API_BASE}/pois`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: '{}',
     });
   } catch (err) {
@@ -940,30 +1239,23 @@ async function runStatusChecks() {
   $sCatalog.textContent = 'checking...'; $sCatalog.className = 'status-value';
   $sAuth.textContent = 'checking...';    $sAuth.className = 'status-value';
   $sSchema.textContent = '—';
-
   try {
     const resp = await fetch(`${API_BASE}/pois`);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
-    $sApi.textContent = 'reachable';
-    $sApi.className = 'status-value ok';
+    $sApi.textContent = 'reachable';  $sApi.className = 'status-value ok';
     $sCatalog.textContent = `${data.count ?? 0} POIs`;
     $sCatalog.className = 'status-value ok';
     if (data.schemaVersion) $sSchema.textContent = data.schemaVersion;
-  } catch (err) {
-    $sApi.textContent = 'unreachable';
-    $sApi.className = 'status-value err';
-    $sCatalog.textContent = '—';
-    $sCatalog.className = 'status-value err';
+  } catch {
+    $sApi.textContent = 'unreachable'; $sApi.className = 'status-value err';
+    $sCatalog.textContent = '—'; $sCatalog.className = 'status-value err';
   }
-
   try {
     await validateToken(getStoredToken());
-    $sAuth.textContent = 'valid';
-    $sAuth.className = 'status-value ok';
-  } catch (err) {
-    $sAuth.textContent = 'invalid';
-    $sAuth.className = 'status-value err';
+    $sAuth.textContent = 'valid'; $sAuth.className = 'status-value ok';
+  } catch {
+    $sAuth.textContent = 'invalid'; $sAuth.className = 'status-value err';
     setTimeout(() => logout(), 1500);
   }
 }
@@ -989,14 +1281,12 @@ async function loadPOIs() {
         <div class="empty-state-title">Couldn't load POIs</div>
         <div class="empty-state-text">${escapeHTML(err.message)}</div>
         <button class="btn ghost" onclick="loadPOIs()">Try again</button>
-      </div>
-    `;
+      </div>`;
     toast('Failed to load POIs: ' + err.message, 'err');
   }
 }
 
 function renderPOIList() {
-  // Update counts
   const counts = { all: state.pois.length, 'winter-chute': 0, 'narrative-poi': 0, 'general': 0 };
   for (const poi of state.pois) {
     if (counts[poi.type] !== undefined) counts[poi.type]++;
@@ -1006,16 +1296,10 @@ function renderPOIList() {
   document.getElementById('count-narrative-poi').textContent = counts['narrative-poi'];
   document.getElementById('count-general').textContent = counts.general;
 
-  // Filter
   let filtered = state.pois;
-  if (state.filter !== 'all') {
-    filtered = filtered.filter(p => p.type === state.filter);
-  }
-
-  // Sort
+  if (state.filter !== 'all') filtered = filtered.filter(p => p.type === state.filter);
   filtered = [...filtered].sort(sortComparator(state.sort));
 
-  // Subheading
   const total = state.pois.length;
   const shown = filtered.length;
   if (total === 0) {
@@ -1026,7 +1310,6 @@ function renderPOIList() {
     $poiSubheading.textContent = `${shown} of ${total} POIs · loaded ${formatTime(state.loadedAt)}`;
   }
 
-  // Render
   if (state.pois.length === 0) {
     $listContainer.innerHTML = renderEmptyState();
   } else if (filtered.length === 0) {
@@ -1038,11 +1321,11 @@ function renderPOIList() {
 
 function sortComparator(sortKey) {
   switch (sortKey) {
-    case 'name-asc':     return (a,b) => (a.name||'').localeCompare(b.name||'');
-    case 'name-desc':    return (a,b) => (b.name||'').localeCompare(a.name||'');
-    case 'updated-asc':  return (a,b) => new Date(a.updatedAt||0) - new Date(b.updatedAt||0);
+    case 'name-asc':    return (a,b) => (a.name||'').localeCompare(b.name||'');
+    case 'name-desc':   return (a,b) => (b.name||'').localeCompare(a.name||'');
+    case 'updated-asc': return (a,b) => new Date(a.updatedAt||0) - new Date(b.updatedAt||0);
     case 'updated-desc':
-    default:             return (a,b) => new Date(b.updatedAt||0) - new Date(a.updatedAt||0);
+    default:            return (a,b) => new Date(b.updatedAt||0) - new Date(a.updatedAt||0);
   }
 }
 
@@ -1056,7 +1339,6 @@ function renderPOICard(poi) {
   const region = poi.region || '—';
   const updated = poi.updatedAt ? formatDate(poi.updatedAt) : '—';
 
-  // Build flags
   const flags = [];
   if (poi.needsRoping) flags.push({ label: 'Needs roping', cls: 'flag-warn' });
   if (poi.closesEarly) flags.push({ label: 'Closes early', cls: 'flag-warn' });
@@ -1065,34 +1347,19 @@ function renderPOICard(poi) {
   if (poi.skiedThisSeason) flags.push({ label: 'Skied 25-26', cls: 'flag-info' });
   if (poi.bookmarked) flags.push({ label: 'Bookmarked', cls: 'flag-info' });
 
-  // Type-specific meta rows
   let extraMeta = '';
   if (poi.type === 'winter-chute') {
     const slope = (poi.slopeMin_deg !== undefined && poi.slopeMax_deg !== undefined)
       ? `${poi.slopeMin_deg}-${poi.slopeMax_deg}°` : '—';
     const storm = poi.stormDirPreference || '—';
     extraMeta = `
-      <div class="poi-meta-item">
-        <div class="poi-meta-label">Slope</div>
-        <div class="poi-meta-value">${escapeHTML(slope)}</div>
-      </div>
-      <div class="poi-meta-item">
-        <div class="poi-meta-label">Storm dir</div>
-        <div class="poi-meta-value">${escapeHTML(storm)}</div>
-      </div>
-    `;
+      <div class="poi-meta-item"><div class="poi-meta-label">Slope</div><div class="poi-meta-value">${escapeHTML(slope)}</div></div>
+      <div class="poi-meta-item"><div class="poi-meta-label">Storm dir</div><div class="poi-meta-value">${escapeHTML(storm)}</div></div>`;
   } else if (poi.type === 'narrative-poi') {
     const season = poi.season || 'any';
     extraMeta = `
-      <div class="poi-meta-item">
-        <div class="poi-meta-label">Season</div>
-        <div class="poi-meta-value">${escapeHTML(season)}</div>
-      </div>
-      <div class="poi-meta-item">
-        <div class="poi-meta-label">Audio</div>
-        <div class="poi-meta-value">${poi.audioUrl ? 'yes' : '—'}</div>
-      </div>
-    `;
+      <div class="poi-meta-item"><div class="poi-meta-label">Season</div><div class="poi-meta-value">${escapeHTML(season)}</div></div>
+      <div class="poi-meta-item"><div class="poi-meta-label">Audio</div><div class="poi-meta-value">${poi.audioUrl ? 'yes' : '—'}</div></div>`;
   }
 
   return `
@@ -1108,31 +1375,15 @@ function renderPOICard(poi) {
         </div>
       </div>
       <div class="poi-meta">
-        <div class="poi-meta-item">
-          <div class="poi-meta-label">ID</div>
-          <div class="poi-meta-value">${escapeHTML(poi.id || '—')}</div>
-        </div>
-        <div class="poi-meta-item">
-          <div class="poi-meta-label">Region</div>
-          <div class="poi-meta-value">${escapeHTML(region)}</div>
-        </div>
-        <div class="poi-meta-item">
-          <div class="poi-meta-label">Coords</div>
-          <div class="poi-meta-value">${escapeHTML(coords)}</div>
-        </div>
-        <div class="poi-meta-item">
-          <div class="poi-meta-label">Radius</div>
-          <div class="poi-meta-value">${escapeHTML(radius)}</div>
-        </div>
+        <div class="poi-meta-item"><div class="poi-meta-label">ID</div><div class="poi-meta-value">${escapeHTML(poi.id || '—')}</div></div>
+        <div class="poi-meta-item"><div class="poi-meta-label">Region</div><div class="poi-meta-value">${escapeHTML(region)}</div></div>
+        <div class="poi-meta-item"><div class="poi-meta-label">Coords</div><div class="poi-meta-value">${escapeHTML(coords)}</div></div>
+        <div class="poi-meta-item"><div class="poi-meta-label">Radius</div><div class="poi-meta-value">${escapeHTML(radius)}</div></div>
         ${extraMeta}
-        <div class="poi-meta-item">
-          <div class="poi-meta-label">Updated</div>
-          <div class="poi-meta-value">${escapeHTML(updated)}</div>
-        </div>
+        <div class="poi-meta-item"><div class="poi-meta-label">Updated</div><div class="poi-meta-value">${escapeHTML(updated)}</div></div>
       </div>
       ${flags.length ? `<div class="poi-flags">${flags.map(f => `<span class="flag ${f.cls}">${f.label}</span>`).join('')}</div>` : ''}
-    </div>
-  `;
+    </div>`;
 }
 
 function renderEmptyState() {
@@ -1145,12 +1396,10 @@ function renderEmptyState() {
       </div>
       <div class="empty-state-title">No POIs yet</div>
       <div class="empty-state-text">
-        The catalog is empty. Once Step 10 ships, you'll be able to add chutes,
-        narrative POIs, and general locations from this page. For now you can
-        also add them via the API directly.
+        The catalog is empty. Click <strong>+ Add POI</strong> in the top right
+        to add your first chute, narrative POI, or general location.
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
 function renderFilteredEmpty() {
@@ -1165,19 +1414,12 @@ function renderFilteredEmpty() {
         Nothing matches this filter. Try a different category or
         <a href="#" id="reset-filter" style="color: var(--coral);">clear the filter</a>.
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
-// Use event delegation for the "clear the filter" link inside the empty state
 $listContainer.addEventListener('click', (e) => {
-  if (e.target.id === 'reset-filter') {
-    e.preventDefault();
-    setFilter('all');
-  }
+  if (e.target.id === 'reset-filter') { e.preventDefault(); setFilter('all'); }
 });
-
-// ─── Filter + sort handlers ───────────────────────────────
 
 function setFilter(filter) {
   state.filter = filter;
@@ -1191,29 +1433,400 @@ $filterPills.addEventListener('click', (e) => {
   const pill = e.target.closest('.pill');
   if (pill) setFilter(pill.dataset.filter);
 });
+$sortSelect.addEventListener('change', () => { state.sort = $sortSelect.value; renderPOIList(); });
+$refreshBtn.addEventListener('click', () => { loadPOIs(); toast('Refreshing POI list...'); });
 
-$sortSelect.addEventListener('change', () => {
-  state.sort = $sortSelect.value;
-  renderPOIList();
+// ─── Form: open / reset / wire ────────────────────────────
+
+function openAddForm() {
+  state.form = {
+    type: null,
+    id: '', name: '', region: '', geoDescription: '', notes: '',
+    topLat: '', topLon: '', radiusMeters: '',
+    // winter-chute
+    bottomLat: '', bottomLon: '',
+    slopeMin_deg: '', slopeMax_deg: '',
+    widthMin_m: '', widthMax_m: '',
+    topElev_m: '', bottomElev_m: '',
+    stormDirPreference: '',
+    vegetation: '',
+    cornice: false, skiedThisSeason: false, patrolControlled: false,
+    bookmarked: false, experimental: false, closesEarly: false, needsRoping: false,
+    // narrative-poi
+    audioUrl: '', narrativeText: '', season: 'any', narrativeAudioAutoPlay: true,
+  };
+  state.idLocked = false;
+  state.saving = false;
+
+  // Clear inputs
+  document.querySelectorAll('#view-form input, #view-form textarea, #view-form select').forEach(el => {
+    if (el.type === 'checkbox') el.checked = false;
+    else el.value = '';
+  });
+  document.getElementById('f-season').value = 'any';
+
+  // Reset type selector
+  document.querySelectorAll('.type-option').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.flag-toggle').forEach(el => {
+    if (el.dataset.flag === 'narrativeAudioAutoPlay') el.classList.add('on');
+    else el.classList.remove('on');
+  });
+  document.querySelectorAll('.compass-btn').forEach(el => el.classList.remove('selected'));
+
+  // Hide error block
+  document.getElementById('form-error-block').style.display = 'none';
+
+  // Hide type-specific sections
+  document.getElementById('section-geometry').style.display = 'none';
+  document.getElementById('section-conditions').style.display = 'none';
+  document.getElementById('section-narrative').style.display = 'none';
+
+  // Heading
+  document.getElementById('form-heading').textContent = 'New POI';
+  document.getElementById('form-subheading').textContent = 'Add a new point of interest to the catalog';
+  document.getElementById('form-breadcrumb-current').textContent = 'New POI';
+
+  setActiveTab('form');
+  updateFormStatus();
+}
+
+// Build the compass picker once
+(function buildCompass() {
+  const $compass = document.getElementById('compass-picker');
+  $compass.innerHTML = COMPASS_16.map(dir =>
+    `<button type="button" class="compass-btn" data-dir="${dir}">${dir}</button>`
+  ).join('');
+  $compass.addEventListener('click', (e) => {
+    const btn = e.target.closest('.compass-btn');
+    if (!btn) return;
+    state.form.stormDirPreference = btn.dataset.dir;
+    document.querySelectorAll('.compass-btn').forEach(b => b.classList.toggle('selected', b === btn));
+    updateFormStatus();
+  });
+})();
+
+// Build the flags grid
+(function buildFlags() {
+  const $grid = document.getElementById('flags-grid');
+  $grid.innerHTML = FLAG_DEFS.map(f =>
+    `<div class="flag-toggle" data-flag="${f.key}"><div class="box"></div><div class="label">${f.label}</div></div>`
+  ).join('');
+  $grid.addEventListener('click', (e) => {
+    const toggle = e.target.closest('.flag-toggle');
+    if (!toggle) return;
+    const key = toggle.dataset.flag;
+    state.form[key] = !state.form[key];
+    toggle.classList.toggle('on', state.form[key]);
+    updateFormStatus();
+  });
+})();
+
+// Wire narrative auto-play toggle
+document.getElementById('f-autoplay').addEventListener('click', (e) => {
+  state.form.narrativeAudioAutoPlay = !state.form.narrativeAudioAutoPlay;
+  e.currentTarget.classList.toggle('on', state.form.narrativeAudioAutoPlay);
 });
 
-$refreshBtn.addEventListener('click', () => {
-  loadPOIs();
-  toast('Refreshing POI list...');
+// Wire type selector
+document.getElementById('type-selector').addEventListener('click', (e) => {
+  const btn = e.target.closest('.type-option');
+  if (!btn) return;
+  state.form.type = btn.dataset.type;
+  document.querySelectorAll('.type-option').forEach(t => t.classList.toggle('selected', t === btn));
+  // Show/hide sections
+  document.getElementById('section-geometry').style.display   = state.form.type === 'winter-chute' ? '' : 'none';
+  document.getElementById('section-conditions').style.display = state.form.type === 'winter-chute' ? '' : 'none';
+  document.getElementById('section-narrative').style.display  = state.form.type === 'narrative-poi' ? '' : 'none';
+  updateFormStatus();
 });
 
-// ─── Formatting helpers ───────────────────────────────────
+// Wire generic input handlers
+function wireField(id, key, parseFn) {
+  const el = document.getElementById(id);
+  el.addEventListener('input', () => {
+    const raw = el.value;
+    state.form[key] = parseFn ? parseFn(raw) : raw;
+    if (key === 'name' && !state.idLocked) {
+      const suggested = slugify(raw);
+      document.getElementById('f-id').value = suggested;
+      state.form.id = suggested;
+    }
+    updateFormStatus();
+  });
+}
+function wireNumberField(id, key) { wireField(id, key, (v) => v === '' ? '' : Number(v)); }
+
+wireField('f-name', 'name');
+wireField('f-region', 'region');
+wireField('f-geoDesc', 'geoDescription');
+wireField('f-notes', 'notes');
+wireField('f-vegetation', 'vegetation');
+wireField('f-audioUrl', 'audioUrl');
+wireField('f-narrativeText', 'narrativeText');
+
+// ID field — lock once user types directly
+document.getElementById('f-id').addEventListener('input', (e) => {
+  state.idLocked = true;
+  state.form.id = e.target.value;
+  updateFormStatus();
+});
+
+wireNumberField('f-topLat', 'topLat');
+wireNumberField('f-topLon', 'topLon');
+wireNumberField('f-radius', 'radiusMeters');
+wireNumberField('f-bottomLat', 'bottomLat');
+wireNumberField('f-bottomLon', 'bottomLon');
+wireNumberField('f-slopeMin', 'slopeMin_deg');
+wireNumberField('f-slopeMax', 'slopeMax_deg');
+wireNumberField('f-widthMin', 'widthMin_m');
+wireNumberField('f-widthMax', 'widthMax_m');
+wireNumberField('f-topElev', 'topElev_m');
+wireNumberField('f-bottomElev', 'bottomElev_m');
+
+document.getElementById('f-season').addEventListener('change', (e) => {
+  state.form.season = e.target.value;
+  updateFormStatus();
+});
+
+// Add POI button
+$addBtn.addEventListener('click', openAddForm);
+
+// Form back / cancel
+document.getElementById('form-back-link').addEventListener('click', () => setActiveTab('pois'));
+document.getElementById('form-cancel-btn').addEventListener('click', () => {
+  if (!state.form) return setActiveTab('pois');
+  // If form has any data, confirm before discarding
+  const hasData = state.form.name || state.form.id || state.form.topLat;
+  if (hasData && !confirm('Discard this POI? Any entered data will be lost.')) return;
+  setActiveTab('pois');
+});
+
+// Save modal handlers
+$saveCloseBtn.addEventListener('click', () => {
+  $saveModal.classList.remove('show');
+  setActiveTab('pois');
+});
+$saveAnotherBtn.addEventListener('click', () => {
+  $saveModal.classList.remove('show');
+  openAddForm();
+});
+
+// ─── Form validation ──────────────────────────────────────
+
+function buildPOIFromForm() {
+  const f = state.form;
+  const poi = {
+    id: (f.id || '').trim(),
+    name: (f.name || '').trim(),
+    type: f.type,
+  };
+  if (typeof f.topLat === 'number' && typeof f.topLon === 'number') {
+    poi.topLatLon = [f.topLat, f.topLon];
+  }
+  if (typeof f.radiusMeters === 'number') poi.radiusMeters = f.radiusMeters;
+  if (f.region)         poi.region = f.region.trim();
+  if (f.geoDescription) poi.geoDescription = f.geoDescription.trim();
+  if (f.notes)          poi.notes = f.notes.trim();
+
+  if (f.type === 'winter-chute') {
+    if (typeof f.bottomLat === 'number' && typeof f.bottomLon === 'number') {
+      poi.bottomLatLon = [f.bottomLat, f.bottomLon];
+    }
+    if (typeof f.slopeMin_deg === 'number') poi.slopeMin_deg = f.slopeMin_deg;
+    if (typeof f.slopeMax_deg === 'number') poi.slopeMax_deg = f.slopeMax_deg;
+    if (typeof f.widthMin_m === 'number')   poi.widthMin_m = f.widthMin_m;
+    if (typeof f.widthMax_m === 'number')   poi.widthMax_m = f.widthMax_m;
+    if (typeof f.topElev_m === 'number')    poi.topElev_m = f.topElev_m;
+    if (typeof f.bottomElev_m === 'number') poi.bottomElev_m = f.bottomElev_m;
+    if (f.stormDirPreference) poi.stormDirPreference = f.stormDirPreference;
+    if (f.vegetation) poi.vegetation = f.vegetation.trim();
+    poi.cornice = !!f.cornice;
+    poi.skiedThisSeason = !!f.skiedThisSeason;
+    poi.patrolControlled = !!f.patrolControlled;
+    poi.bookmarked = !!f.bookmarked;
+    poi.experimental = !!f.experimental;
+    poi.closesEarly = !!f.closesEarly;
+    poi.needsRoping = !!f.needsRoping;
+  } else if (f.type === 'narrative-poi') {
+    if (f.audioUrl)      poi.audioUrl = f.audioUrl.trim();
+    if (f.narrativeText) poi.narrativeText = f.narrativeText.trim();
+    poi.season = f.season || 'any';
+    poi.narrativeAudioAutoPlay = !!f.narrativeAudioAutoPlay;
+  }
+  return poi;
+}
+
+function validatePOIClient(poi) {
+  const errors = [];
+  if (!poi || typeof poi !== 'object') return ['poi must be an object'];
+
+  // id
+  if (!poi.id || typeof poi.id !== 'string') errors.push('ID is required.');
+  else if (!ID_REGEX.test(poi.id)) errors.push('ID must be lowercase letters, digits, and hyphens only.');
+
+  // name
+  if (!poi.name || typeof poi.name !== 'string') errors.push('Name is required.');
+
+  // type
+  if (!VALID_TYPES.includes(poi.type)) errors.push('Pick a type at the top of the form.');
+
+  // topLatLon
+  if (!Array.isArray(poi.topLatLon) || poi.topLatLon.length !== 2 ||
+      typeof poi.topLatLon[0] !== 'number' || typeof poi.topLatLon[1] !== 'number') {
+    errors.push('Top latitude and longitude are required.');
+  } else {
+    const [lat, lon] = poi.topLatLon;
+    if (lat < KH_BBOX.latMin || lat > KH_BBOX.latMax ||
+        lon < KH_BBOX.lonMin || lon > KH_BBOX.lonMax) {
+      errors.push(`Top coordinates are outside the KH bounding box (lat ${KH_BBOX.latMin}-${KH_BBOX.latMax}, lon ${KH_BBOX.lonMin} to ${KH_BBOX.lonMax}).`);
+    }
+  }
+
+  // radius
+  if (typeof poi.radiusMeters !== 'number' || isNaN(poi.radiusMeters)) {
+    errors.push('Trigger radius is required.');
+  } else if (poi.radiusMeters < RADIUS_MIN || poi.radiusMeters > RADIUS_MAX) {
+    errors.push(`Radius must be between ${RADIUS_MIN} and ${RADIUS_MAX} meters.`);
+  }
+
+  if (poi.type === 'winter-chute') {
+    if (!Array.isArray(poi.bottomLatLon) || poi.bottomLatLon.length !== 2 ||
+        typeof poi.bottomLatLon[0] !== 'number' || typeof poi.bottomLatLon[1] !== 'number') {
+      errors.push('Bottom latitude and longitude are required for winter-chute.');
+    } else {
+      const [lat, lon] = poi.bottomLatLon;
+      if (lat < KH_BBOX.latMin || lat > KH_BBOX.latMax ||
+          lon < KH_BBOX.lonMin || lon > KH_BBOX.lonMax) {
+        errors.push('Bottom coordinates are outside the KH bounding box.');
+      }
+    }
+    if (typeof poi.slopeMin_deg !== 'number' || typeof poi.slopeMax_deg !== 'number') {
+      errors.push('Slope min and max are required.');
+    } else if (poi.slopeMin_deg > poi.slopeMax_deg) {
+      errors.push('Slope min must be less than or equal to slope max.');
+    }
+    if (typeof poi.widthMin_m !== 'number' || typeof poi.widthMax_m !== 'number') {
+      errors.push('Width min and max are required.');
+    } else if (poi.widthMin_m > poi.widthMax_m) {
+      errors.push('Width min must be less than or equal to width max.');
+    }
+    if (typeof poi.topElev_m !== 'number' || typeof poi.bottomElev_m !== 'number') {
+      errors.push('Top and bottom elevation are required.');
+    } else if (poi.topElev_m < poi.bottomElev_m) {
+      errors.push('Top elevation must be greater than or equal to bottom elevation.');
+    }
+    if (!COMPASS_16.includes(poi.stormDirPreference)) {
+      errors.push('Pick a storm direction preference (the 16-point compass).');
+    }
+  } else if (poi.type === 'narrative-poi') {
+    if (!poi.audioUrl) errors.push('Audio URL is required for narrative-poi.');
+    if (!VALID_SEASONS.includes(poi.season)) errors.push('Pick a season.');
+  }
+
+  return errors;
+}
+
+function updateFormStatus() {
+  if (!state.form) return;
+  const $status = document.getElementById('form-status');
+  const $save   = document.getElementById('form-save-btn');
+
+  if (!state.form.type) {
+    $status.textContent = 'Pick a type to start.';
+    $status.className = 'form-footer-status';
+    $save.disabled = true;
+    return;
+  }
+
+  const poi = buildPOIFromForm();
+  const errs = validatePOIClient(poi);
+  if (errs.length === 0) {
+    $status.textContent = 'Ready to save.';
+    $status.className = 'form-footer-status ready';
+    $save.disabled = state.saving;
+  } else {
+    $status.textContent = `${errs.length} field${errs.length === 1 ? '' : 's'} need attention.`;
+    $status.className = 'form-footer-status';
+    $save.disabled = true;
+  }
+}
+
+// ─── Save action ──────────────────────────────────────────
+
+document.getElementById('form-save-btn').addEventListener('click', async () => {
+  if (!state.form || state.saving) return;
+  const poi = buildPOIFromForm();
+  const errs = validatePOIClient(poi);
+  if (errs.length > 0) {
+    showFormErrors(errs);
+    return;
+  }
+  state.saving = true;
+  document.getElementById('form-save-btn').disabled = true;
+  document.getElementById('form-status').textContent = 'Saving...';
+
+  const token = getStoredToken();
+  try {
+    const resp = await fetch(`${API_BASE}/pois`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(poi),
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (resp.status === 401) {
+      toast('Session expired. Please sign in again.', 'err');
+      logout();
+      return;
+    }
+    if (resp.status === 400 && Array.isArray(data.errors)) {
+      showFormErrors(data.errors);
+      state.saving = false;
+      document.getElementById('form-status').textContent = 'Validation failed.';
+      document.getElementById('form-status').className = 'form-footer-status err';
+      return;
+    }
+    if (!resp.ok) throw new Error(data.error || `HTTP ${resp.status}`);
+
+    // Success
+    state.saving = false;
+    state.pois.push(data.saved || poi);
+    $saveModalText.textContent = `"${poi.name}" has been saved to the catalog.`;
+    $saveModal.classList.add('show');
+    toast('POI saved', 'ok');
+  } catch (err) {
+    state.saving = false;
+    document.getElementById('form-save-btn').disabled = false;
+    document.getElementById('form-status').textContent = 'Save failed: ' + err.message;
+    document.getElementById('form-status').className = 'form-footer-status err';
+    toast('Save failed: ' + err.message, 'err');
+  }
+});
+
+function showFormErrors(errors) {
+  const $block = document.getElementById('form-error-block');
+  const $list = document.getElementById('form-error-list');
+  $list.innerHTML = errors.map(e => `<li>${escapeHTML(e)}</li>`).join('');
+  $block.style.display = '';
+  $block.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ─── Helpers ──────────────────────────────────────────────
+
+function slugify(s) {
+  return (s || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .substring(0, 64);
+}
 
 function escapeHTML(str) {
   if (str === null || str === undefined) return '';
   return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
-
 function formatDate(isoStr) {
   try {
     const d = new Date(isoStr);
@@ -1221,13 +1834,12 @@ function formatDate(isoStr) {
     return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   } catch { return '—'; }
 }
-
 function formatTime(d) {
   if (!d) return '—';
   return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
 }
 
-// ─── Wire login events ────────────────────────────────────
+// ─── Wire ─────────────────────────────────────────────────
 
 $loginBtn.addEventListener('click', attemptLogin);
 $tokenIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') attemptLogin(); });
@@ -1239,18 +1851,12 @@ $logoutBtn.addEventListener('click', logout);
   showLoading();
   const stored = getStoredToken();
   if (stored) {
-    try {
-      await validateToken(stored);
-      showDashboard();
-      return;
-    } catch (err) {
-      clearStoredToken();
-    }
+    try { await validateToken(stored); showDashboard(); return; }
+    catch { clearStoredToken(); }
   }
   showLogin();
 })();
 
-// Expose loadPOIs globally so the "Try again" button in error states can call it
 window.loadPOIs = loadPOIs;
 </script>
 

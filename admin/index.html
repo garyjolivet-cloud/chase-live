@@ -652,7 +652,88 @@ input, textarea, select { font-family: inherit; }
 }
 .validation-errors ul { margin: 6px 0 0 18px; }
 
-/* ─── Save success modal ─── */
+/* ─── Image upload tiles ─── */
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+.image-tile {
+  background: var(--panel);
+  border: 1px solid var(--rim);
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.image-tile-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.image-tile-label .role {
+  font-size: 0.62rem;
+  color: var(--ice);
+  background: rgba(125, 212, 248, 0.08);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(125, 212, 248, 0.25);
+}
+.image-tile-preview {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: var(--ink);
+  border: 1px dashed var(--rim);
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 0.78rem;
+  overflow: hidden;
+  position: relative;
+}
+.image-tile-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.image-tile-progress {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 3px;
+  background: var(--rim);
+}
+.image-tile-progress .bar {
+  height: 100%;
+  background: var(--coral);
+  width: 0%;
+  transition: width 0.15s;
+}
+.image-tile-buttons {
+  display: flex;
+  gap: 6px;
+}
+.image-tile-buttons .btn {
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  flex: 1;
+}
+.image-tile-hint {
+  font-size: 0.7rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.image-tile-hint.err { color: var(--danger); }
+.image-tile-hint.ok  { color: var(--green); }
+.image-tile input[type=file] { display: none; }
 
 .modal-backdrop {
   position: fixed; inset: 0;
@@ -821,10 +902,9 @@ input, textarea, select { font-family: inherit; }
         <div class="status-row"><span class="status-label">Schema version</span><span id="status-schema" class="status-value">—</span></div>
       </div>
       <div class="placeholder-note">
-        <strong>Steps 8 + 9 + 10 + 11 complete.</strong> The back office is fully
-        functional for managing POIs — you can add, edit, and delete them.
-        Step 12 will add image upload directly from the form; Step 13 will add
-        a map view.
+        <strong>Steps 8 + 9 + 10 + 11 + 12 complete.</strong> Back office can fully
+        manage POIs including images. Edit a POI to upload Primary, Detail, and
+        Far-view images (max 5 MB each). Step 13 adds a map view.
       </div>
     </div>
 
@@ -1046,6 +1126,47 @@ input, textarea, select { font-family: inherit; }
               <div class="box"></div><div class="label">Yes, auto-play on entry</div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Section: Images (edit mode only) -->
+      <div class="form-section" id="section-images" style="display:none;">
+        <div class="form-section-title">Images <span class="badge">save first, then upload</span></div>
+        <div class="image-grid">
+
+          <div class="image-tile" data-slot="main">
+            <div class="image-tile-label">Primary <span class="role">required for reveal</span></div>
+            <div class="image-tile-preview" id="img-preview-main"><span>No image yet</span></div>
+            <div class="image-tile-buttons">
+              <button type="button" class="btn ghost" data-action="choose" data-slot="main">Choose file</button>
+              <button type="button" class="btn ghost" data-action="remove" data-slot="main" style="display:none;">Remove</button>
+            </div>
+            <div class="image-tile-hint" id="img-hint-main">JPEG/PNG/WebP, max 5 MB</div>
+            <input type="file" data-slot="main" accept="image/jpeg,image/png,image/webp">
+          </div>
+
+          <div class="image-tile" data-slot="profile">
+            <div class="image-tile-label">Detail <span class="role">close-up</span></div>
+            <div class="image-tile-preview" id="img-preview-profile"><span>No image yet</span></div>
+            <div class="image-tile-buttons">
+              <button type="button" class="btn ghost" data-action="choose" data-slot="profile">Choose file</button>
+              <button type="button" class="btn ghost" data-action="remove" data-slot="profile" style="display:none;">Remove</button>
+            </div>
+            <div class="image-tile-hint" id="img-hint-profile">JPEG/PNG/WebP, max 5 MB</div>
+            <input type="file" data-slot="profile" accept="image/jpeg,image/png,image/webp">
+          </div>
+
+          <div class="image-tile" data-slot="runout">
+            <div class="image-tile-label">Far view <span class="role">across-valley</span></div>
+            <div class="image-tile-preview" id="img-preview-runout"><span>No image yet</span></div>
+            <div class="image-tile-buttons">
+              <button type="button" class="btn ghost" data-action="choose" data-slot="runout">Choose file</button>
+              <button type="button" class="btn ghost" data-action="remove" data-slot="runout" style="display:none;">Remove</button>
+            </div>
+            <div class="image-tile-hint" id="img-hint-runout">JPEG/PNG/WebP, max 5 MB</div>
+            <input type="file" data-slot="runout" accept="image/jpeg,image/png,image/webp">
+          </div>
+
         </div>
       </div>
 
@@ -1399,6 +1520,7 @@ function renderPOICard(poi) {
         <div class="poi-meta-item"><div class="poi-meta-label">Coords</div><div class="poi-meta-value">${escapeHTML(coords)}</div></div>
         <div class="poi-meta-item"><div class="poi-meta-label">Radius</div><div class="poi-meta-value">${escapeHTML(radius)}</div></div>
         ${extraMeta}
+        <div class="poi-meta-item"><div class="poi-meta-label">Images</div><div class="poi-meta-value">${imageCount(poi)}</div></div>
         <div class="poi-meta-item"><div class="poi-meta-label">Updated</div><div class="poi-meta-value">${escapeHTML(updated)}</div></div>
       </div>
       ${flags.length ? `<div class="poi-flags">${flags.map(f => `<span class="flag ${f.cls}">${f.label}</span>`).join('')}</div>` : ''}
@@ -1477,6 +1599,8 @@ function blankFormState() {
     bookmarked: false, experimental: false, closesEarly: false, needsRoping: false,
     // narrative-poi
     audioUrl: '', narrativeText: '', season: 'any', narrativeAudioAutoPlay: true,
+    // images
+    images: { main: '', profile: '', runout: '' },
   };
 }
 
@@ -1484,6 +1608,7 @@ function resetFormUI() {
   // Clear inputs
   document.querySelectorAll('#view-form input, #view-form textarea, #view-form select').forEach(el => {
     if (el.type === 'checkbox') el.checked = false;
+    else if (el.type === 'file') el.value = '';
     else el.value = '';
   });
   document.getElementById('f-season').value = 'any';
@@ -1503,6 +1628,20 @@ function resetFormUI() {
   document.getElementById('section-geometry').style.display = 'none';
   document.getElementById('section-conditions').style.display = 'none';
   document.getElementById('section-narrative').style.display = 'none';
+  document.getElementById('section-images').style.display = 'none';
+
+  // Reset image previews
+  ['main', 'profile', 'runout'].forEach(slot => {
+    const $preview = document.getElementById(`img-preview-${slot}`);
+    if ($preview) $preview.innerHTML = '<span>No image yet</span>';
+    const $hint = document.getElementById(`img-hint-${slot}`);
+    if ($hint) { $hint.textContent = 'JPEG/PNG/WebP, max 5 MB'; $hint.className = 'image-tile-hint'; }
+    const tile = document.querySelector(`.image-tile[data-slot="${slot}"]`);
+    if (tile) {
+      const removeBtn = tile.querySelector('[data-action="remove"]');
+      if (removeBtn) removeBtn.style.display = 'none';
+    }
+  });
 
   // Re-enable ID input (may have been disabled by previous edit)
   document.getElementById('f-id').disabled = false;
@@ -1629,6 +1768,19 @@ function openEditForm(poiId) {
   // Narrative autoplay toggle (separate)
   const autoplayToggle = document.getElementById('f-autoplay');
   if (autoplayToggle) autoplayToggle.classList.toggle('on', !!state.form.narrativeAudioAutoPlay);
+
+  // Show Images section in edit mode and pre-populate previews
+  document.getElementById('section-images').style.display = '';
+  const existingImages = (poi.images && typeof poi.images === 'object') ? poi.images : {};
+  state.form.images = {
+    main:    existingImages.main    || '',
+    profile: existingImages.profile || '',
+    runout:  existingImages.runout  || '',
+  };
+  ['main', 'profile', 'runout'].forEach(slot => {
+    const url = state.form.images[slot];
+    if (url) renderImagePreview(slot, url);
+  });
 
   // Heading
   document.getElementById('form-heading').textContent = `Edit ${poi.name || poi.id}`;
@@ -1885,6 +2037,13 @@ function buildPOIFromForm() {
     poi.season = f.season || 'any';
     poi.narrativeAudioAutoPlay = !!f.narrativeAudioAutoPlay;
   }
+  // Images (only meaningful in edit mode; preserved as-is otherwise)
+  if (f.images && (f.images.main || f.images.profile || f.images.runout)) {
+    poi.images = {};
+    if (f.images.main)    poi.images.main    = f.images.main;
+    if (f.images.profile) poi.images.profile = f.images.profile;
+    if (f.images.runout)  poi.images.runout  = f.images.runout;
+  }
   return poi;
 }
 
@@ -1983,6 +2142,178 @@ function updateFormStatus() {
   }
 }
 
+// ─── Image upload (Step 12) ───────────────────────────────
+
+function renderImagePreview(slot, url) {
+  const $preview = document.getElementById(`img-preview-${slot}`);
+  if (!$preview) return;
+  $preview.innerHTML = `<img src="${escapeHTML(url)}" alt="${slot}" onerror="this.parentElement.innerHTML='<span style=color:var(--danger)>Image failed to load</span>'">`;
+  const tile = document.querySelector(`.image-tile[data-slot="${slot}"]`);
+  if (tile) {
+    const removeBtn = tile.querySelector('[data-action="remove"]');
+    if (removeBtn) removeBtn.style.display = '';
+    const chooseBtn = tile.querySelector('[data-action="choose"]');
+    if (chooseBtn) chooseBtn.textContent = 'Replace';
+  }
+}
+
+function clearImagePreview(slot) {
+  const $preview = document.getElementById(`img-preview-${slot}`);
+  if ($preview) $preview.innerHTML = '<span>No image yet</span>';
+  const tile = document.querySelector(`.image-tile[data-slot="${slot}"]`);
+  if (tile) {
+    const removeBtn = tile.querySelector('[data-action="remove"]');
+    if (removeBtn) removeBtn.style.display = 'none';
+    const chooseBtn = tile.querySelector('[data-action="choose"]');
+    if (chooseBtn) chooseBtn.textContent = 'Choose file';
+  }
+  const $hint = document.getElementById(`img-hint-${slot}`);
+  if ($hint) { $hint.textContent = 'JPEG/PNG/WebP, max 5 MB'; $hint.className = 'image-tile-hint'; }
+}
+
+async function uploadImageForSlot(slot, file) {
+  if (!state.editingId) {
+    toast('Save the POI first, then upload images.', 'err');
+    return;
+  }
+  if (!file) return;
+
+  // Client-side validation
+  const ALLOWED = ['image/jpeg', 'image/png', 'image/webp'];
+  if (!ALLOWED.includes(file.type)) {
+    setImageHint(slot, `Unsupported type: ${file.type || 'unknown'}`, 'err');
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    setImageHint(slot, `Too large: ${(file.size / 1024 / 1024).toFixed(1)} MB (max 5)`, 'err');
+    return;
+  }
+
+  setImageHint(slot, `Uploading ${file.name}...`, '');
+  showProgress(slot, 5);
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('poiId', state.editingId);
+  formData.append('field', slot);
+
+  try {
+    const token = getStoredToken();
+    const resp = await fetch(`${API_BASE}/upload`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData,
+    });
+    showProgress(slot, 90);
+    const data = await resp.json().catch(() => ({}));
+    if (resp.status === 401) {
+      toast('Session expired. Please sign in again.', 'err');
+      logout();
+      return;
+    }
+    if (!resp.ok) throw new Error(data.error || `HTTP ${resp.status}`);
+
+    // Success — show preview, save URL into state, then PUT POI to persist images map
+    state.form.images[slot] = data.url;
+    renderImagePreview(slot, data.url);
+    setImageHint(slot, `Uploaded · ${(file.size / 1024).toFixed(0)} KB`, 'ok');
+    showProgress(slot, 100);
+    setTimeout(() => hideProgress(slot), 600);
+
+    // Persist images map to the POI immediately (small POST, idempotent)
+    await persistImagesNow();
+    toast('Image uploaded', 'ok');
+  } catch (err) {
+    setImageHint(slot, 'Upload failed: ' + err.message, 'err');
+    hideProgress(slot);
+    toast('Upload failed: ' + err.message, 'err');
+  }
+}
+
+function setImageHint(slot, text, kind) {
+  const $hint = document.getElementById(`img-hint-${slot}`);
+  if (!$hint) return;
+  $hint.textContent = text;
+  $hint.className = 'image-tile-hint' + (kind ? ' ' + kind : '');
+}
+
+function showProgress(slot, pct) {
+  const $preview = document.getElementById(`img-preview-${slot}`);
+  if (!$preview) return;
+  let $bar = $preview.querySelector('.image-tile-progress .bar');
+  if (!$bar) {
+    const wrap = document.createElement('div');
+    wrap.className = 'image-tile-progress';
+    wrap.innerHTML = '<div class="bar"></div>';
+    $preview.appendChild(wrap);
+    $bar = wrap.querySelector('.bar');
+  }
+  $bar.style.width = pct + '%';
+}
+
+function hideProgress(slot) {
+  const $preview = document.getElementById(`img-preview-${slot}`);
+  if (!$preview) return;
+  const $wrap = $preview.querySelector('.image-tile-progress');
+  if ($wrap) $wrap.remove();
+}
+
+async function persistImagesNow() {
+  // Re-POST the current POI (with updated images) so the catalog reflects the upload.
+  if (!state.editingId) return;
+  const poi = state.pois.find(p => p.id === state.editingId);
+  if (!poi) return;
+  const updated = { ...poi, images: { ...(poi.images || {}), ...state.form.images } };
+  // Drop empty values to keep the record clean
+  ['main','profile','runout'].forEach(k => {
+    if (!updated.images[k]) delete updated.images[k];
+  });
+  if (Object.keys(updated.images).length === 0) delete updated.images;
+
+  const token = getStoredToken();
+  const resp = await fetch(`${API_BASE}/pois`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(updated),
+  });
+  if (!resp.ok) {
+    const data = await resp.json().catch(() => ({}));
+    throw new Error(data.error || `HTTP ${resp.status}`);
+  }
+  // Update local cache
+  const idx = state.pois.findIndex(p => p.id === state.editingId);
+  if (idx >= 0) state.pois[idx] = updated;
+}
+
+// Wire image tile buttons (event delegation)
+document.querySelector('#section-images').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-action]');
+  if (!btn) return;
+  const slot = btn.dataset.slot;
+  const action = btn.dataset.action;
+  if (action === 'choose') {
+    const fileInput = document.querySelector(`#section-images input[type=file][data-slot="${slot}"]`);
+    if (fileInput) fileInput.click();
+  } else if (action === 'remove') {
+    if (!confirm('Remove this image? It stays in storage but won\'t be linked to this POI anymore.')) return;
+    state.form.images[slot] = '';
+    clearImagePreview(slot);
+    persistImagesNow().then(() => toast('Image removed', 'ok'))
+                      .catch(err => toast('Remove failed: ' + err.message, 'err'));
+  }
+});
+
+// Wire file inputs (change event)
+document.querySelectorAll('#section-images input[type=file]').forEach(input => {
+  input.addEventListener('change', (e) => {
+    const slot = e.target.dataset.slot;
+    const file = e.target.files[0];
+    if (!file) return;
+    uploadImageForSlot(slot, file);
+    e.target.value = ''; // allow re-selecting the same file later
+  });
+});
+
 // ─── Save action ──────────────────────────────────────────
 
 document.getElementById('form-save-btn').addEventListener('click', async () => {
@@ -2066,6 +2397,13 @@ function slugify(s) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .substring(0, 64);
+}
+
+function imageCount(poi) {
+  if (!poi.images || typeof poi.images !== 'object') return '0';
+  const n = ['main','profile','runout','entrance','exit','extra1','extra2','extra3']
+    .filter(k => poi.images[k]).length;
+  return n === 0 ? '0' : `${n} / 3`;
 }
 
 function escapeHTML(str) {

@@ -220,12 +220,10 @@ export async function onRequestPost({ request, env }) {
     return errorResponse(`Failed to write to R2: ${err.message}`, 500);
   }
 
-  // Build the public URL.
-  // If R2 public access isn't enabled yet, this URL won't work for reads
-  // until the bucket's r2.dev subdomain is enabled (one-time Cloudflare task).
-  // We compute the URL from the request host to avoid hardcoding.
-  // For now, just return the key; the back office can prepend the R2 base.
+  // Build the public URL using the actual R2.dev public subdomain
+  // (enabled in Step 6 verification — pub-deb8eae1e0eb4b55a9753722f77b21b0.r2.dev).
   const url = `https://pub-deb8eae1e0eb4b55a9753722f77b21b0.r2.dev/${key}`;
+
   return jsonResponse({
     saved: true,
     url,
